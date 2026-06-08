@@ -3,8 +3,23 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import { authenticateUser } from "@/actions/auth/login";
 
 export const authOptions: NextAuthOptions = {
+  secret: process.env.AUTH_SECRET ?? process.env.NEXTAUTH_SECRET,
   session: {
     strategy: "jwt",
+  },
+  cookies: {
+    sessionToken: {
+      name:
+        process.env.NODE_ENV === "production"
+          ? "__Secure-beerdex.session-token"
+          : "beerdex.session-token",
+      options: {
+        httpOnly: true,
+        sameSite: "lax",
+        path: "/",
+        secure: process.env.NODE_ENV === "production",
+      },
+    },
   },
   providers: [
     CredentialsProvider({
