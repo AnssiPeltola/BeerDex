@@ -1,4 +1,4 @@
-import { eq } from "drizzle-orm";
+import { eq, or } from "drizzle-orm";
 import { db } from "@/db";
 import { users } from "@/db/schema";
 
@@ -25,6 +25,16 @@ export async function findUserByUsername(username: string) {
     .select()
     .from(users)
     .where(eq(users.username, username))
+    .limit(1);
+
+  return user ?? null;
+}
+
+export async function findUserByIdentifier(identifier: string) {
+  const [user] = await db
+    .select()
+    .from(users)
+    .where(or(eq(users.email, identifier), eq(users.username, identifier)))
     .limit(1);
 
   return user ?? null;
