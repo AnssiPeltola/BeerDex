@@ -19,4 +19,17 @@ export const registerUserSchema = z.object({
     .max(128, "Password is too long"),
 });
 
+export const loginUserSchema = z.object({
+  identifier: z
+    .string()
+    .trim()
+    .min(1, "Email or username is required")
+    .max(128, "Email or username is too long"),
+  password: z
+    .string()
+    .min(8, "Password must be at least 8 characters")
+    .max(128, "Password is too long"),
+});
+
 export type RegisterUserInput = z.infer<typeof registerUserSchema>;
+export type LoginUserInput = z.infer<typeof loginUserSchema>;
