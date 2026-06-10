@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { handleLogout } from "@/actions/auth/logout";
 
@@ -65,12 +66,13 @@ export default function UserDropdownMenu({
           </div>
 
           {role === "admin" ? (
-            <button
-              type="button"
+            <Link
+              href="/admin"
+              onClick={() => setIsOpen(false)}
               className="flex w-full items-center rounded-xl px-3 py-2 text-left text-sm font-medium text-slate-700 transition hover:bg-slate-100 hover:text-slate-950"
             >
               Admin panel
-            </button>
+            </Link>
           ) : null}
 
           <button
