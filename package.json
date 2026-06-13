@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "seed": "tsx scripts/seed.ts",
+    "seed:countries": "tsx scripts/seed-countries.ts"
   },
   "dependencies": {
     "@neondatabase/serverless": "^1.1.0",
@@ -17,6 +19,7 @@
     "next-auth": "^4.24.14",
     "react": "19.2.4",
     "react-dom": "19.2.4",
+    "world-countries": "^5.1.0",
     "zod": "^4.4.3"
   },
   "devDependencies": {
@@ -28,6 +31,7 @@
     "eslint": "^9",
     "eslint-config-next": "16.2.7",
     "tailwindcss": "^4",
+    "tsx": "^4.20.4",
     "typescript": "^5"
   }
 }
