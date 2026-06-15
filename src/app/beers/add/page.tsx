@@ -338,7 +338,7 @@ export default function AddBeerPage() {
   }
 
   function handleAddNewBeer() {
-    router.push(`/beers/new?query=${encodeURIComponent(searchedQuery)}`);
+    router.push("/beers/new");
   }
 
   const firstVisibleResult = (currentPage - 1) * RESULTS_PER_PAGE + 1;
