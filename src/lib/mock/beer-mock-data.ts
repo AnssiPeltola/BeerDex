@@ -5,9 +5,9 @@ export const mockCountries = [
 ];
 
 export const mockBreweries = [
-  { id: 1, name: "Sinebrychoff", countryId: 1 },
-  { id: 2, name: "Weihenstephan", countryId: 2 },
-  { id: 3, name: "Duvel Moortgat", countryId: 3 },
+  { id: 1, name: "Sinebrychoff", countryId: 75 },
+  { id: 2, name: "Weihenstephan", countryId: 83 },
+  { id: 3, name: "Duvel Moortgat", countryId: 22 },
 ];
 
 export const mockStyles = [
