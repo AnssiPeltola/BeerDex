@@ -1,6 +1,7 @@
 "use client";
 
 import { useBeerWizardStore } from "@/stores/beer-wizard-store";
+import CountryAutocomplete from "@/components/ui/CountryAutocomplete";
 
 import {
   mockBreweries,
@@ -22,22 +23,14 @@ export default function BeerInfoStep() {
       />
 
       {/* Country */}
-      <select
-        className="w-full border p-2"
-        value={data.countryId ?? ""}
-        onChange={(e) =>
+      <CountryAutocomplete
+        value={data.countryId}
+        onChange={(id) =>
           updateData({
-            countryId: Number(e.target.value),
+            countryId: id ?? undefined,
           })
         }
-      >
-        <option value="">Select country</option>
-        {mockCountries.map((c) => (
-          <option key={c.id} value={c.id}>
-            {c.name}
-          </option>
-        ))}
-      </select>
+      />
 
       {/* Brewery */}
       <select

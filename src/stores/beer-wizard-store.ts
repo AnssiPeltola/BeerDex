@@ -9,7 +9,7 @@ export interface BeerWizardData {
   // Step 1 - Basic Beer Info
   name: string;
   breweryId: number | null;
-  countryId: number | null;
+  countryId?: number;
   styleId: number | null;
   volumeMl: number | null;
 
@@ -41,7 +41,7 @@ const initialData: BeerWizardData = {
   // Step 1
   name: "",
   breweryId: null,
-  countryId: null,
+  countryId: undefined,
   styleId: null,
   volumeMl: null,
 
