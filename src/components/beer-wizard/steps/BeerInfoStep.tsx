@@ -3,12 +3,7 @@
 import { useBeerWizardStore } from "@/stores/beer-wizard-store";
 import CountryAutocomplete from "@/components/ui/CountryAutocomplete";
 import BreweryAutocomplete from "@/components/ui/BreweryAutocomplete";
-
-import {
-  mockBreweries,
-  mockCountries,
-  mockStyles,
-} from "@/lib/mock/beer-mock-data";
+import BeerStyleAutocomplete from "@/components/ui/BeerStyleAutocomplete";
 
 export default function BeerInfoStep() {
   const { data, updateData } = useBeerWizardStore();
@@ -45,22 +40,14 @@ export default function BeerInfoStep() {
       />
 
       {/* Style */}
-      <select
-        className="w-full border p-2"
-        value={data.styleId ?? ""}
-        onChange={(e) =>
+      <BeerStyleAutocomplete
+        value={data.styleId ?? null}
+        onChange={(id) =>
           updateData({
-            styleId: Number(e.target.value),
+            styleId: id ?? undefined,
           })
         }
-      >
-        <option value="">Select style</option>
-        {mockStyles.map((s) => (
-          <option key={s.id} value={s.id}>
-            {s.name}
-          </option>
-        ))}
-      </select>
+      />
 
       {/* Volume */}
       <input
