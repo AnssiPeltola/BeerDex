@@ -20,31 +20,31 @@ export default function BeerInfoStep() {
 
       {/* Country */}
       <CountryAutocomplete
-        value={data.countryId}
-        onChange={(id) =>
+        value={data.country}
+        onChange={(country) =>
           updateData({
-            countryId: id ?? undefined,
+            country,
           })
         }
       />
 
       {/* Brewery */}
       <BreweryAutocomplete
-        countryId={data.countryId ?? null}
-        value={data.breweryId ?? null}
-        onChange={(id) =>
+        countryId={data.country?.id ?? null}
+        value={data.brewery}
+        onChange={(brewery) =>
           updateData({
-            breweryId: id ?? undefined,
+            brewery,
           })
         }
       />
 
       {/* Style */}
       <BeerStyleAutocomplete
-        value={data.styleId ?? null}
-        onChange={(id) =>
+        value={data.style}
+        onChange={(style) =>
           updateData({
-            styleId: id ?? undefined,
+            style,
           })
         }
       />

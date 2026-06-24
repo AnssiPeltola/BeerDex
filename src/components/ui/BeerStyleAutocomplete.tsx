@@ -7,10 +7,11 @@ import {
   type BeerStyleDTO,
 } from "@/stores/beer-style-wizard-store";
 import AddBeerStyleModal from "@/components/beer-wizard/modals/AddBeerStyleModal";
+import type { BeerStyleOption } from "@/types/beer-wizard-types";
 
 type Props = {
-  value?: number | null;
-  onChange: (styleId: number | null) => void;
+  value?: BeerStyleOption | null;
+  onChange: (style: BeerStyleOption | null) => void;
 };
 
 export default function BeerStyleAutocomplete({ value, onChange }: Props) {
@@ -19,7 +20,7 @@ export default function BeerStyleAutocomplete({ value, onChange }: Props) {
 
   const [input, setInput] = useState("");
   const [open, setOpen] = useState(false);
-  const [selected, setSelected] = useState<BeerStyleDTO | null>(null);
+  const [selected, setSelected] = useState<BeerStyleOption | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
 
   const debounced = useDebounce(input, 200);
@@ -56,7 +57,7 @@ export default function BeerStyleAutocomplete({ value, onChange }: Props) {
       <input
         className="w-full border p-2"
         placeholder="Select beer style..."
-        value={selected ? selected.name : input}
+        value={value ? value.name : input}
         onChange={(e) => {
           setInput(e.target.value);
           setSelected(null);
@@ -86,7 +87,10 @@ export default function BeerStyleAutocomplete({ value, onChange }: Props) {
                   setSelected(style);
                   setInput(style.name);
                   setOpen(false);
-                  onChange(style.id);
+                  onChange({
+                    id: style.id,
+                    name: style.name,
+                  });
                 }}
               >
                 <span>{style.name}</span>
@@ -120,7 +124,10 @@ export default function BeerStyleAutocomplete({ value, onChange }: Props) {
 
           setSelected(style);
           setInput(style.name);
-          onChange(style.id);
+          onChange({
+            id: style.id,
+            name: style.name,
+          });
         }}
       />
     </div>

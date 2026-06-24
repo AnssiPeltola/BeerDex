@@ -17,9 +17,9 @@ export default function AddBeerWizard() {
     if (currentStep === 1) {
       const result = beerStep1Schema.safeParse({
         name: data.name,
-        breweryId: data.breweryId,
-        countryId: data.countryId,
-        styleId: data.styleId,
+        breweryId: data.brewery?.id,
+        countryId: data.country?.id,
+        styleId: data.style?.id,
         volumeMl: data.volumeMl,
       });
 

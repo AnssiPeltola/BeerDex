@@ -1,4 +1,9 @@
 import { create } from "zustand";
+import type {
+  CountryOption,
+  BreweryOption,
+  BeerStyleOption,
+} from "@/types/beer-wizard-types";
 
 const MAX_STEP = 4 as const;
 const MIN_STEP = 1 as const;
@@ -8,9 +13,9 @@ type Step = 1 | 2 | 3 | 4;
 export interface BeerWizardData {
   // Step 1 - Basic Beer Info
   name: string;
-  breweryId: number | null;
-  countryId?: number;
-  styleId: number | null;
+  country: CountryOption | null;
+  brewery: BreweryOption | null;
+  style: BeerStyleOption | null;
   volumeMl: number | null;
 
   // Step 2 - Beer Characteristics
@@ -40,9 +45,9 @@ interface BeerWizardStore {
 const initialData: BeerWizardData = {
   // Step 1
   name: "",
-  breweryId: null,
-  countryId: undefined,
-  styleId: null,
+  country: null,
+  brewery: null,
+  style: null,
   volumeMl: null,
 
   // Step 2
