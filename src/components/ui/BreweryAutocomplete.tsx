@@ -7,11 +7,12 @@ import {
   type BreweryDTO,
 } from "@/stores/brewery-wizard-store";
 import AddBreweryModal from "@/components/beer-wizard/modals/AddBreweryModal";
+import type { BreweryOption } from "@/types/beer-wizard-types";
 
 type Props = {
   countryId: number | null;
-  value?: number | null;
-  onChange: (breweryId: number | null) => void;
+  value?: BreweryOption | null;
+  onChange: (brewery: BreweryOption | null) => void;
 };
 
 export default function BreweryAutocomplete({
@@ -30,7 +31,7 @@ export default function BreweryAutocomplete({
   const [modalOpen, setModalOpen] = useState(false);
   const [input, setInput] = useState("");
   const [open, setOpen] = useState(false);
-  const [selected, setSelected] = useState<BreweryDTO | null>(null);
+  const [selected, setSelected] = useState<BreweryOption | null>(null);
 
   const debounced = useDebounce(input, 200);
 
@@ -73,7 +74,7 @@ export default function BreweryAutocomplete({
       <input
         className="w-full border p-2"
         placeholder="Select brewery..."
-        value={selected ? selected.name : input}
+        value={value ? value.name : input}
         disabled={!countryId}
         onChange={(e) => {
           setInput(e.target.value);
@@ -105,10 +106,16 @@ export default function BreweryAutocomplete({
                 key={brewery.id}
                 className="cursor-pointer p-2 hover:bg-gray-100 flex justify-between"
                 onClick={() => {
-                  setSelected(brewery);
-                  setInput(brewery.name);
+                  const option = {
+                    id: brewery.id,
+                    name: brewery.name,
+                  };
+
+                  setSelected(option);
+                  setInput(option.name);
                   setOpen(false);
-                  onChange(brewery.id);
+
+                  onChange(option);
                 }}
               >
                 <span>{brewery.name}</span>
@@ -143,9 +150,14 @@ export default function BreweryAutocomplete({
 
           addBrewery(countryId, brewery);
 
-          setSelected(brewery);
-          setInput(brewery.name);
-          onChange(brewery.id);
+          const option = {
+            id: brewery.id,
+            name: brewery.name,
+          };
+
+          setSelected(option);
+          setInput(option.name);
+          onChange(option);
         }}
       />
     </div>

@@ -1,19 +1,9 @@
 "use client";
 
 import { useBeerWizardStore } from "@/stores/beer-wizard-store";
-import {
-  mockCountries,
-  mockBreweries,
-  mockStyles,
-} from "@/lib/mock/beer-mock-data";
 
 export default function ReviewStep() {
   const { data } = useBeerWizardStore();
-
-  // Mockdata we made for testing
-  const country = mockCountries.find((c) => c.id === data.countryId);
-  const brewery = mockBreweries.find((b) => b.id === data.breweryId);
-  const style = mockStyles.find((s) => s.id === data.styleId);
 
   return (
     <div className="space-y-6">
@@ -27,13 +17,15 @@ export default function ReviewStep() {
           <span className="font-medium">Name:</span> {data.name}
         </p>
         <p>
-          <span className="font-medium">Country ID:</span> {country?.name}
+          <span className="font-medium">Country name:</span>{" "}
+          {data.country?.name}
         </p>
         <p>
-          <span className="font-medium">Brewery ID:</span> {brewery?.name}
+          <span className="font-medium">Brewery name:</span>{" "}
+          {data.brewery?.name}
         </p>
         <p>
-          <span className="font-medium">Style ID:</span> {style?.name}
+          <span className="font-medium">Style ID:</span> {data.style?.name}
         </p>
         <p>
           <span className="font-medium">Volume:</span> {data.volumeMl} ml

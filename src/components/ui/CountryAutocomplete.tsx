@@ -2,21 +2,17 @@
 
 import { useEffect, useState } from "react";
 import { useDebounce } from "@/hooks/useDebounce";
-
-type Country = {
-  id: number;
-  name: string;
-};
+import type { CountryOption } from "@/types/beer-wizard-types";
 
 type Props = {
-  value?: number | null;
-  onChange: (countryId: number | null) => void;
+  value?: CountryOption | null;
+  onChange: (country: CountryOption | null) => void;
 };
 
 export default function CountryAutocomplete({ value, onChange }: Props) {
   const [input, setInput] = useState("");
-  const [results, setResults] = useState<Country[]>([]);
-  const [selected, setSelected] = useState<Country | null>(null);
+  const [results, setResults] = useState<CountryOption[]>([]);
+  const [selected, setSelected] = useState<CountryOption | null>(null);
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -36,7 +32,7 @@ export default function CountryAutocomplete({ value, onChange }: Props) {
         `/api/countries?search=${encodeURIComponent(debounced)}`,
       );
 
-      const data: Country[] = await res.json();
+      const data: CountryOption[] = await res.json();
 
       setResults(data);
       setLoading(false);
@@ -49,7 +45,7 @@ export default function CountryAutocomplete({ value, onChange }: Props) {
     <div className="relative w-full">
       <input
         className="w-full border p-2"
-        value={selected ? selected.name : input}
+        value={value ? value.name : input}
         placeholder="Select country..."
         onChange={(e) => {
           setInput(e.target.value);
@@ -87,7 +83,7 @@ export default function CountryAutocomplete({ value, onChange }: Props) {
                   setInput(country.name);
                   setOpen(false);
                   setResults([]);
-                  onChange(country.id); // ONLY valid value here
+                  onChange(country);
                 }}
               >
                 {country.name}
