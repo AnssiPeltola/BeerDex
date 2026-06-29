@@ -1,23 +1,27 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { useBeerWizardStore } from "@/stores/beer-wizard-store";
+import { imageSchema } from "@/validations/image";
 
 export default function ImageUploadStep() {
   const { data, updateData } = useBeerWizardStore();
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   const file = data.image;
 
   const handleFile = (file?: File | null) => {
     if (!file) return;
 
-    // basic safety check
-    if (!file.type.startsWith("image/")) {
-      alert("Please upload an image file");
+    const result = imageSchema.safeParse(file);
+
+    if (!result.success) {
+      setError(result.error.issues[0]?.message ?? "Invalid image");
       return;
     }
 
+    setError(null);
     updateData({ image: file });
   };
 
@@ -53,6 +57,7 @@ export default function ImageUploadStep() {
               className="text-red-600 underline"
               onClick={(e) => {
                 e.stopPropagation();
+                setError(null);
                 updateData({ image: null });
               }}
             >
@@ -61,10 +66,12 @@ export default function ImageUploadStep() {
           </div>
         )}
 
+        {error ? <p className="mt-4 text-sm text-red-600">{error}</p> : null}
+
         <input
           ref={fileInputRef}
           type="file"
-          accept="image/*"
+          accept="image/jpeg,image/jpg,image/png,image/webp,image/heic,image/heif"
           className="hidden"
           onChange={(e) => handleFile(e.target.files?.[0])}
         />
