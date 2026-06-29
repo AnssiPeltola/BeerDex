@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useBeerWizardStore } from "@/stores/beer-wizard-store";
 import BeerInfoStep from "@/components/beer-wizard/steps/BeerInfoStep";
 import CharacteristicsStep from "@/components/beer-wizard/steps/CharacteristicsStep";
@@ -11,7 +12,11 @@ import { useRouter } from "next/navigation";
 
 export default function AddBeerWizard() {
   const router = useRouter();
-  const { currentStep, data, nextStep, previousStep } = useBeerWizardStore();
+
+  const { currentStep, data, nextStep, previousStep, reset } =
+    useBeerWizardStore();
+
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleNext = () => {
     if (currentStep === 1) {
@@ -51,10 +56,60 @@ export default function AddBeerWizard() {
 
     if (currentStep < 4) {
       nextStep();
-      return;
     }
+  };
 
-    router.push("/beers/success");
+  const handleSubmit = async () => {
+    try {
+      if (!data.image) {
+        alert("Missing image");
+        return;
+      }
+
+      setIsSubmitting(true);
+
+      const formData = new FormData();
+
+      formData.append("file", data.image);
+
+      formData.append(
+        "data",
+        JSON.stringify({
+          name: data.name,
+          country: data.country,
+          brewery: data.brewery,
+          style: data.style,
+          volumeMl: data.volumeMl,
+          abv: data.abv,
+          ibu: data.ibu,
+          ebu: data.ebu,
+          ebc: data.ebc,
+          eanBarcode: data.eanBarcode,
+        }),
+      );
+
+      const res = await fetch("/api/new-beer", {
+        method: "POST",
+        body: formData,
+      });
+
+      const result = await res.json();
+
+      if (!res.ok) {
+        alert(result.error || "Failed to create beer");
+        return;
+      }
+
+      // reset wizard state after success
+      reset();
+
+      router.push("/beers/success");
+    } catch (err) {
+      console.error(err);
+      alert("Something went wrong");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -71,8 +126,11 @@ export default function AddBeerWizard() {
           Back
         </button>
 
-        <button onClick={handleNext}>
-          {currentStep < 4 ? "Next" : "Submit"}
+        <button
+          onClick={currentStep < 4 ? handleNext : handleSubmit}
+          disabled={isSubmitting}
+        >
+          {isSubmitting ? "Creating..." : currentStep < 4 ? "Next" : "Submit"}
         </button>
       </div>
     </div>

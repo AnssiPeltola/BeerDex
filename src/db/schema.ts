@@ -131,6 +131,8 @@ export const beerImages = pgTable("beer_images", {
   }),
 
   imageUrl: text("image_url").notNull(),
+  cloudinaryPublicId: text("cloudinary_public_id"),
+
   fileName: varchar("file_name", { length: 255 }),
   mimeType: varchar("mime_type", { length: 100 }),
 
