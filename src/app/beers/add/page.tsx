@@ -12,215 +12,13 @@ type BeerSearchResult = {
   volumeMl: number | null;
   abv: string | null;
   eanBarcode: string | null;
+  status: "pending" | "approved";
 };
 
 type BeerSearchResponse = {
   beers: BeerSearchResult[];
   totalCount: number;
 };
-
-const RESULTS_PER_PAGE = 10;
-
-const mockBeers: BeerSearchResult[] = [
-  {
-    id: 101,
-    name: "Karhu Lager",
-    breweryName: "Sinebrychoff",
-    countryName: "Finland",
-    volumeMl: 330,
-    abv: "4.60",
-    eanBarcode: "6413600010001",
-  },
-  {
-    id: 102,
-    name: "Karhu Tumma",
-    breweryName: "Sinebrychoff",
-    countryName: "Finland",
-    volumeMl: 330,
-    abv: "4.80",
-    eanBarcode: "6413600010002",
-  },
-  {
-    id: 103,
-    name: "Karhu IPA",
-    breweryName: "Sinebrychoff",
-    countryName: "Finland",
-    volumeMl: 440,
-    abv: "5.50",
-    eanBarcode: "6413600010003",
-  },
-  {
-    id: 104,
-    name: "Karhu Pale Ale",
-    breweryName: "Sinebrychoff",
-    countryName: "Finland",
-    volumeMl: 440,
-    abv: "5.20",
-    eanBarcode: "6413600010004",
-  },
-  {
-    id: 105,
-    name: "Karhu Pils",
-    breweryName: "Sinebrychoff",
-    countryName: "Finland",
-    volumeMl: 500,
-    abv: "4.70",
-    eanBarcode: "6413600010005",
-  },
-  {
-    id: 106,
-    name: "Karhu Export",
-    breweryName: "Sinebrychoff",
-    countryName: "Finland",
-    volumeMl: 500,
-    abv: "5.30",
-    eanBarcode: "6413600010006",
-  },
-  {
-    id: 107,
-    name: "Karhu Strong",
-    breweryName: "Sinebrychoff",
-    countryName: "Finland",
-    volumeMl: 500,
-    abv: "7.00",
-    eanBarcode: "6413600010007",
-  },
-  {
-    id: 108,
-    name: "Karhu Amber",
-    breweryName: "Sinebrychoff",
-    countryName: "Finland",
-    volumeMl: 440,
-    abv: "5.60",
-    eanBarcode: "6413600010008",
-  },
-  {
-    id: 109,
-    name: "Karhu Wheat",
-    breweryName: "Sinebrychoff",
-    countryName: "Finland",
-    volumeMl: 500,
-    abv: "5.10",
-    eanBarcode: "6413600010009",
-  },
-  {
-    id: 110,
-    name: "Karhu Session IPA",
-    breweryName: "Sinebrychoff",
-    countryName: "Finland",
-    volumeMl: 330,
-    abv: "4.20",
-    eanBarcode: "6413600010010",
-  },
-  {
-    id: 111,
-    name: "Karhu Double IPA",
-    breweryName: "Sinebrychoff",
-    countryName: "Finland",
-    volumeMl: 440,
-    abv: "8.00",
-    eanBarcode: "6413600010011",
-  },
-  {
-    id: 112,
-    name: "Karhu Red Ale",
-    breweryName: "Sinebrychoff",
-    countryName: "Finland",
-    volumeMl: 440,
-    abv: "5.40",
-    eanBarcode: "6413600010012",
-  },
-  {
-    id: 113,
-    name: "Karhu Stout",
-    breweryName: "Sinebrychoff",
-    countryName: "Finland",
-    volumeMl: 330,
-    abv: "6.20",
-    eanBarcode: "6413600010013",
-  },
-  {
-    id: 114,
-    name: "Karhu Porter",
-    breweryName: "Sinebrychoff",
-    countryName: "Finland",
-    volumeMl: 500,
-    abv: "6.80",
-    eanBarcode: "6413600010014",
-  },
-  {
-    id: 115,
-    name: "Karhu Hazy IPA",
-    breweryName: "Sinebrychoff",
-    countryName: "Finland",
-    volumeMl: 440,
-    abv: "5.90",
-    eanBarcode: "6413600010015",
-  },
-  {
-    id: 116,
-    name: "Karhu West Coast IPA",
-    breweryName: "Sinebrychoff",
-    countryName: "Finland",
-    volumeMl: 440,
-    abv: "6.50",
-    eanBarcode: "6413600010016",
-  },
-  {
-    id: 117,
-    name: "Karhu Lager Gold",
-    breweryName: "Sinebrychoff",
-    countryName: "Finland",
-    volumeMl: 330,
-    abv: "4.90",
-    eanBarcode: "6413600010017",
-  },
-  {
-    id: 118,
-    name: "Karhu Premium",
-    breweryName: "Sinebrychoff",
-    countryName: "Finland",
-    volumeMl: 500,
-    abv: "5.00",
-    eanBarcode: "6413600010018",
-  },
-  {
-    id: 119,
-    name: "Karhu Reserve",
-    breweryName: "Sinebrychoff",
-    countryName: "Finland",
-    volumeMl: 500,
-    abv: "6.00",
-    eanBarcode: "6413600010019",
-  },
-  {
-    id: 120,
-    name: "Karhu Arctic Lager",
-    breweryName: "Sinebrychoff",
-    countryName: "Finland",
-    volumeMl: 330,
-    abv: "4.70",
-    eanBarcode: "6413600010020",
-  },
-  {
-    id: 121,
-    name: "Karhu Midnight Porter",
-    breweryName: "Sinebrychoff",
-    countryName: "Finland",
-    volumeMl: 500,
-    abv: "7.10",
-    eanBarcode: "6413600010021",
-  },
-  {
-    id: 122,
-    name: "Karhu Summer Ale",
-    breweryName: "Sinebrychoff",
-    countryName: "Finland",
-    volumeMl: 440,
-    abv: "4.80",
-    eanBarcode: "6413600010022",
-  },
-];
 
 async function searchBeers({
   query,
@@ -231,29 +29,22 @@ async function searchBeers({
   page: number;
   limit: number;
 }): Promise<BeerSearchResponse> {
-  const searchValue = query.trim().toLowerCase();
-
-  // Simulated network latency so the loading state has something to show.
-  // Remove this once a real API call is in place.
-  await new Promise((resolve) => setTimeout(resolve, 300));
-
-  // TODO: Later replace this function with real DB/API call.
-  const filteredBeers = mockBeers.filter((beer) => {
-    return (
-      beer.name.toLowerCase().includes(searchValue) ||
-      beer.breweryName.toLowerCase().includes(searchValue) ||
-      beer.eanBarcode?.includes(searchValue)
-    );
+  const params = new URLSearchParams({
+    q: query,
+    page: String(page),
+    limit: String(limit),
   });
 
-  const startIndex = (page - 1) * limit;
-  const paginatedBeers = filteredBeers.slice(startIndex, startIndex + limit);
+  const res = await fetch(`/api/beers/search?${params.toString()}`);
 
-  return {
-    beers: paginatedBeers,
-    totalCount: filteredBeers.length,
-  };
+  if (!res.ok) {
+    throw new Error("Search failed");
+  }
+
+  return res.json();
 }
+
+const RESULTS_PER_PAGE = 10;
 
 export default function AddBeerPage() {
   const router = useRouter();
@@ -450,6 +241,7 @@ export default function AddBeerPage() {
               className={isLoading ? "opacity-50" : undefined}
             >
               {results.map((beer) => {
+                console.log("BEER OBJECT:", beer);
                 const isAdded = addedBeerIds.has(beer.id);
 
                 return (
@@ -458,7 +250,15 @@ export default function AddBeerPage() {
                     className="flex items-center justify-between rounded-lg border p-4"
                   >
                     <div>
-                      <div className="font-medium">{beer.name}</div>
+                      <div className="flex items-center gap-2 font-medium">
+                        <span>{beer.name}</span>
+
+                        {beer.status === "pending" && (
+                          <span className="text-xs text-yellow-600 border border-yellow-300 px-1 rounded">
+                            Pending
+                          </span>
+                        )}
+                      </div>
 
                       <div className="text-sm text-muted-foreground">
                         {beer.breweryName} • {beer.countryName}
