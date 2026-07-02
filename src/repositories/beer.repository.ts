@@ -1,6 +1,13 @@
 import { db } from "@/db";
-import { beers, breweries, countries } from "@/db/schema";
-import { and, eq, ilike, or, count } from "drizzle-orm";
+import {
+  beerImages,
+  beerStyles,
+  beers,
+  breweries,
+  countries,
+  users,
+} from "@/db/schema";
+import { and, count, desc, eq, ilike, or } from "drizzle-orm";
 
 export type BeerSearchDTO = {
   id: number;
@@ -17,6 +24,75 @@ type SearchBeersInput = {
   page: number;
   limit: number;
 };
+
+export type PendingBeerModerationDTO = {
+  id: number;
+  name: string;
+  abv: string | null;
+  ibu: number | null;
+  ebu: number | null;
+  ebc: number | null;
+  volumeMl: number | null;
+  eanBarcode: string | null;
+  image: string | null;
+  createdAt: Date | null;
+  brewery: {
+    id: number;
+    name: string;
+  };
+  country: {
+    id: number;
+    name: string;
+  };
+  style: {
+    id: number;
+    name: string;
+  } | null;
+  createdByUser: {
+    id: string;
+    username: string;
+  } | null;
+};
+
+export async function getPendingBeers(): Promise<PendingBeerModerationDTO[]> {
+  return db
+    .select({
+      id: beers.id,
+      name: beers.name,
+      abv: beers.abv,
+      ibu: beers.ibu,
+      ebu: beers.ebu,
+      ebc: beers.ebc,
+      volumeMl: beers.volumeMl,
+      eanBarcode: beers.eanBarcode,
+      image: beerImages.imageUrl,
+      createdAt: beers.createdAt,
+      brewery: {
+        id: breweries.id,
+        name: breweries.name,
+      },
+      country: {
+        id: countries.id,
+        name: countries.name,
+      },
+      style: {
+        id: beerStyles.id,
+        name: beerStyles.name,
+      },
+      createdByUser: {
+        id: users.id,
+        username: users.username,
+      },
+    })
+    .from(beers)
+    .innerJoin(breweries, eq(beers.breweryId, breweries.id))
+    .innerJoin(countries, eq(beers.countryId, countries.id))
+    .leftJoin(beerStyles, eq(beers.styleId, beerStyles.id))
+    .leftJoin(users, eq(beers.createdByUserId, users.id))
+    .leftJoin(beerImages, eq(beerImages.beerId, beers.id))
+    .where(eq(beers.status, "pending"))
+    .orderBy(desc(beers.createdAt));
+}
 
 export async function searchBeers({
   q,
