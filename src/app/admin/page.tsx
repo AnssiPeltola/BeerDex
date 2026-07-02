@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export default function AdminPage() {
   return (
     <section className="rounded-3xl border border-white/70 bg-white/90 p-8 shadow-[0_24px_80px_-24px_rgba(15,23,42,0.18)] backdrop-blur sm:p-12">
@@ -11,6 +13,15 @@ export default function AdminPage() {
         This area is reserved for admin users. Add management tools, moderation
         controls, and internal reporting here.
       </p>
+
+      <div className="mt-8">
+        <Link
+          href="/admin/moderation"
+          className="inline-flex items-center rounded-full bg-slate-950 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800"
+        >
+          Go to moderation
+        </Link>
+      </div>
     </section>
   );
 }
