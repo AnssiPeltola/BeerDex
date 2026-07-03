@@ -2,6 +2,9 @@ import Link from "next/link";
 
 import type { PendingBeerStyleModerationDTO } from "@/repositories/beer-style.repository";
 
+import { approveBeerStyle } from "../actions/approveBeerStyle";
+import { rejectBeerStyle } from "../actions/rejectBeerStyle";
+
 function formatDate(value: Date | null) {
   if (!value) {
     return "Unknown";
@@ -59,18 +62,40 @@ export function BeerStyleModerationReview({
           </p>
         </div>
 
-        <div className="grid gap-6">
-          <label className="space-y-2">
-            <span className="text-sm font-medium text-slate-700">
-              Style Name
-            </span>
-            <input
-              type="text"
-              defaultValue={style.name}
-              className="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 shadow-sm outline-none transition focus:border-slate-400 focus:ring-2 focus:ring-slate-200"
-            />
-          </label>
-        </div>
+        <form className="space-y-6">
+          <input type="hidden" name="styleId" value={style.id} />
+
+          <div className="grid gap-6">
+            <label className="space-y-2">
+              <span className="text-sm font-medium text-slate-700">
+                Style Name
+              </span>
+              <input
+                name="name"
+                type="text"
+                defaultValue={style.name}
+                className="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 shadow-sm outline-none transition focus:border-slate-400 focus:ring-2 focus:ring-slate-200"
+              />
+            </label>
+          </div>
+
+          <div className="flex flex-wrap justify-end gap-3 border-t border-slate-200 pt-4">
+            <button
+              type="submit"
+              formAction={approveBeerStyle}
+              className="rounded-full bg-emerald-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-emerald-700"
+            >
+              Approve Style
+            </button>
+            <button
+              type="submit"
+              formAction={rejectBeerStyle}
+              className="rounded-full bg-rose-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-rose-700"
+            >
+              Reject Style
+            </button>
+          </div>
+        </form>
 
         <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
           <div className="grid gap-0 md:grid-cols-2 md:gap-x-8">
@@ -80,21 +105,6 @@ export function BeerStyleModerationReview({
             />
             <DetailRow label="Created At" value={formatDate(style.createdAt)} />
           </div>
-        </div>
-
-        <div className="flex flex-wrap justify-end gap-3 border-t border-slate-200 pt-4">
-          <button
-            type="button"
-            className="rounded-full bg-emerald-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-emerald-700"
-          >
-            Approve Style
-          </button>
-          <button
-            type="button"
-            className="rounded-full bg-rose-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-rose-700"
-          >
-            Reject Style
-          </button>
         </div>
       </section>
     </section>
