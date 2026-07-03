@@ -34,6 +34,7 @@ export type PendingBeerModerationDTO = {
   ebc: number | null;
   volumeMl: number | null;
   eanBarcode: string | null;
+  imageId: number | null;
   image: string | null;
   createdAt: Date | null;
   brewery: {
@@ -65,6 +66,7 @@ export async function getPendingBeers(): Promise<PendingBeerModerationDTO[]> {
       ebc: beers.ebc,
       volumeMl: beers.volumeMl,
       eanBarcode: beers.eanBarcode,
+      imageId: beerImages.id,
       image: beerImages.imageUrl,
       createdAt: beers.createdAt,
       brewery: {

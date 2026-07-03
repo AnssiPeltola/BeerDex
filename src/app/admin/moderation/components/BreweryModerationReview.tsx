@@ -8,6 +8,9 @@ import type { CountryOption } from "@/types/beer-wizard-types";
 
 import type { PendingBreweryModerationDTO } from "@/repositories/brewery.repository";
 
+import { approveBrewery } from "../actions/approveBrewery";
+import { rejectBrewery } from "../actions/rejectBrewery";
+
 function formatDate(value: Date | null) {
   if (!value) {
     return "Unknown";
@@ -70,26 +73,55 @@ export function BreweryModerationReview({
           </p>
         </div>
 
-        <div className="grid gap-6 lg:grid-cols-2">
-          <label className="space-y-2 lg:col-span-2">
-            <span className="text-sm font-medium text-slate-700">
-              Brewery Name
-            </span>
-            <input
-              type="text"
-              defaultValue={brewery.name}
-              className="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 shadow-sm outline-none transition focus:border-slate-400 focus:ring-2 focus:ring-slate-200"
-            />
-          </label>
+        <form className="space-y-6">
+          <input type="hidden" name="breweryId" value={brewery.id} />
+          <input
+            type="hidden"
+            name="countryId"
+            value={selectedCountry?.id ?? ""}
+          />
 
-          <div className="space-y-2 lg:col-span-2">
-            <span className="text-sm font-medium text-slate-700">Country</span>
-            <CountryAutocomplete
-              value={selectedCountry}
-              onChange={setSelectedCountry}
-            />
+          <div className="grid gap-6 lg:grid-cols-2">
+            <label className="space-y-2 lg:col-span-2">
+              <span className="text-sm font-medium text-slate-700">
+                Brewery Name
+              </span>
+              <input
+                name="name"
+                type="text"
+                defaultValue={brewery.name}
+                className="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 shadow-sm outline-none transition focus:border-slate-400 focus:ring-2 focus:ring-slate-200"
+              />
+            </label>
+
+            <div className="space-y-2 lg:col-span-2">
+              <span className="text-sm font-medium text-slate-700">
+                Country
+              </span>
+              <CountryAutocomplete
+                value={selectedCountry}
+                onChange={setSelectedCountry}
+              />
+            </div>
           </div>
-        </div>
+
+          <div className="flex flex-wrap justify-end gap-3 border-t border-slate-200 pt-4">
+            <button
+              type="submit"
+              formAction={approveBrewery}
+              className="rounded-full bg-emerald-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-emerald-700"
+            >
+              Approve Brewery
+            </button>
+            <button
+              type="submit"
+              formAction={rejectBrewery}
+              className="rounded-full bg-rose-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-rose-700"
+            >
+              Reject Brewery
+            </button>
+          </div>
+        </form>
 
         <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
           <div className="grid gap-0 md:grid-cols-2 md:gap-x-8">
@@ -102,21 +134,6 @@ export function BreweryModerationReview({
               value={formatDate(brewery.createdAt)}
             />
           </div>
-        </div>
-
-        <div className="flex flex-wrap justify-end gap-3 border-t border-slate-200 pt-4">
-          <button
-            type="button"
-            className="rounded-full bg-emerald-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-emerald-700"
-          >
-            Approve Brewery
-          </button>
-          <button
-            type="button"
-            className="rounded-full bg-rose-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-rose-700"
-          >
-            Reject Brewery
-          </button>
         </div>
       </section>
     </section>
