@@ -89,6 +89,21 @@ export type BeerDetailsDTO = {
   createdAt: Date | null;
 };
 
+export type AddBeerToUserCollectionResult =
+  | {
+      status: "added";
+      entry: {
+        beerId: number;
+        collectedAt: Date | null;
+      };
+    }
+  | {
+      status: "already_exists";
+    }
+  | {
+      status: "not_found";
+    };
+
 const approvedBeerImages = db
   .select({
     beerId: beerImages.beerId,
@@ -284,6 +299,58 @@ export async function getBeerDetails(
     imageUrls,
     createdAt: firstRow.createdAt,
   };
+}
+
+export async function addBeerToUserCollection(
+  userId: string,
+  beerId: number,
+): Promise<AddBeerToUserCollectionResult> {
+  const [approvedBeer] = await db
+    .select({ id: beers.id })
+    .from(beers)
+    .where(and(eq(beers.id, beerId), eq(beers.status, "approved")))
+    .limit(1);
+
+  if (!approvedBeer) {
+    return { status: "not_found" };
+  }
+
+  const [existingCollectionEntry] = await db
+    .select({ id: userBeers.id })
+    .from(userBeers)
+    .where(and(eq(userBeers.userId, userId), eq(userBeers.beerId, beerId)))
+    .limit(1);
+
+  if (existingCollectionEntry) {
+    return { status: "already_exists" };
+  }
+
+  try {
+    const [created] = await db
+      .insert(userBeers)
+      .values({
+        userId,
+        beerId,
+      })
+      .returning({
+        beerId: userBeers.beerId,
+        collectedAt: userBeers.foundAt,
+      });
+
+    return {
+      status: "added",
+      entry: {
+        beerId: created.beerId,
+        collectedAt: created.collectedAt,
+      },
+    };
+  } catch (error) {
+    if ((error as { code?: string }).code === "23505") {
+      return { status: "already_exists" };
+    }
+
+    throw error;
+  }
 }
 
 export async function searchBeers({

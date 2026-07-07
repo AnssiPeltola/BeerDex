@@ -20,6 +20,18 @@ type BeerSearchResponse = {
   totalCount: number;
 };
 
+type AddBeerToCollectionResponse =
+  | {
+      success: true;
+      collectionEntry: {
+        beerId: number;
+        collectedAt: string | null;
+      };
+    }
+  | {
+      error: string;
+    };
+
 async function searchBeers({
   query,
   page,
@@ -58,6 +70,7 @@ export default function AddBeerPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [addedBeerIds, setAddedBeerIds] = useState<Set<number>>(new Set());
+  const [addingBeerIds, setAddingBeerIds] = useState<Set<number>>(new Set());
 
   const totalPages = Math.ceil(totalCount / RESULTS_PER_PAGE);
 
@@ -117,15 +130,60 @@ export default function AddBeerPage() {
     await runSearch(searchedQuery, page);
   }
 
-  function handleAddToCollection(beerId: number) {
-    // TODO: Replace with real API call to add beer to user's collection.
-    console.log("Add beer to collection:", beerId);
+  async function handleAddToCollection(beerId: number) {
+    if (addedBeerIds.has(beerId) || addingBeerIds.has(beerId)) {
+      return;
+    }
 
-    setAddedBeerIds((prev) => {
+    setAddingBeerIds((prev) => {
       const next = new Set(prev);
       next.add(beerId);
       return next;
     });
+
+    try {
+      const res = await fetch("/api/beers/my-collection/add", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ beerId }),
+      });
+
+      if (res.status === 201) {
+        setAddedBeerIds((prev) => {
+          const next = new Set(prev);
+          next.add(beerId);
+          return next;
+        });
+        return;
+      }
+
+      if (res.status === 409) {
+        setAddedBeerIds((prev) => {
+          const next = new Set(prev);
+          next.add(beerId);
+          return next;
+        });
+        return;
+      }
+
+      const data = (await res
+        .json()
+        .catch(() => null)) as AddBeerToCollectionResponse | null;
+
+      throw new Error(
+        data && "error" in data ? data.error : "Failed to add beer",
+      );
+    } catch {
+      setError("Something went wrong while adding the beer. Please try again.");
+    } finally {
+      setAddingBeerIds((prev) => {
+        const next = new Set(prev);
+        next.delete(beerId);
+        return next;
+      });
+    }
   }
 
   function handleAddNewBeer() {
@@ -241,8 +299,8 @@ export default function AddBeerPage() {
               className={isLoading ? "opacity-50" : undefined}
             >
               {results.map((beer) => {
-                console.log("BEER OBJECT:", beer);
                 const isAdded = addedBeerIds.has(beer.id);
+                const isAdding = addingBeerIds.has(beer.id);
 
                 return (
                   <div
@@ -275,11 +333,15 @@ export default function AddBeerPage() {
 
                     <button
                       type="button"
-                      onClick={() => handleAddToCollection(beer.id)}
-                      disabled={isAdded}
+                      onClick={() => void handleAddToCollection(beer.id)}
+                      disabled={isAdded || isAdding}
                       className="rounded-md border px-3 py-2 disabled:opacity-50"
                     >
-                      {isAdded ? "Added ✓" : "Add to Collection"}
+                      {isAdding
+                        ? "Adding..."
+                        : isAdded
+                          ? "Added ✓"
+                          : "Add to Collection"}
                     </button>
                   </div>
                 );
