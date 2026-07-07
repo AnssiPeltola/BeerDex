@@ -5,9 +5,10 @@ import {
   beers,
   breweries,
   countries,
+  userBeers,
   users,
 } from "@/db/schema";
-import { and, count, desc, eq, ilike, or } from "drizzle-orm";
+import { and, count, desc, eq, ilike, max, or } from "drizzle-orm";
 
 export type BeerSearchDTO = {
   id: number;
@@ -55,6 +56,49 @@ export type PendingBeerModerationDTO = {
   } | null;
 };
 
+export type UserBeerCollectionPreviewDTO = {
+  beerId: number;
+  beerName: string;
+  breweryName: string;
+  countryName: string;
+  styleName: string | null;
+  volumeMl: number | null;
+  abv: string | null;
+  imageUrl: string | null;
+  collectedAt: Date | null;
+};
+
+export type UserBeerCollectionDTO = UserBeerCollectionPreviewDTO;
+
+export type BeerDetailsDTO = {
+  beerId: number;
+  beerName: string;
+  breweryId: number;
+  breweryName: string;
+  countryId: number;
+  countryName: string;
+  styleId: number | null;
+  styleName: string | null;
+  volumeMl: number | null;
+  abv: string | null;
+  ibu: number | null;
+  ebc: number | null;
+  ebu: number | null;
+  eanBarcode: string | null;
+  imageUrls: string[];
+  createdAt: Date | null;
+};
+
+const approvedBeerImages = db
+  .select({
+    beerId: beerImages.beerId,
+    imageId: max(beerImages.id),
+  })
+  .from(beerImages)
+  .where(eq(beerImages.status, "approved"))
+  .groupBy(beerImages.beerId)
+  .as("approved_beer_images");
+
 export async function getPendingBeers(): Promise<PendingBeerModerationDTO[]> {
   return db
     .select({
@@ -94,6 +138,152 @@ export async function getPendingBeers(): Promise<PendingBeerModerationDTO[]> {
     .leftJoin(beerImages, eq(beerImages.beerId, beers.id))
     .where(eq(beers.status, "pending"))
     .orderBy(desc(beers.createdAt));
+}
+
+export async function getUserBeerCollectionPreview(
+  userId: string,
+): Promise<UserBeerCollectionPreviewDTO[]> {
+  return db
+    .select({
+      beerId: beers.id,
+      beerName: beers.name,
+      breweryName: breweries.name,
+      countryName: countries.name,
+      styleName: beerStyles.name,
+      volumeMl: beers.volumeMl,
+      abv: beers.abv,
+      imageUrl: beerImages.imageUrl,
+      collectedAt: userBeers.foundAt,
+    })
+    .from(userBeers)
+    .innerJoin(beers, eq(userBeers.beerId, beers.id))
+    .innerJoin(breweries, eq(beers.breweryId, breweries.id))
+    .innerJoin(countries, eq(beers.countryId, countries.id))
+    .leftJoin(beerStyles, eq(beers.styleId, beerStyles.id))
+    .leftJoin(approvedBeerImages, eq(approvedBeerImages.beerId, beers.id))
+    .leftJoin(beerImages, eq(beerImages.id, approvedBeerImages.imageId))
+    .where(and(eq(userBeers.userId, userId), eq(beers.status, "approved")))
+    .orderBy(desc(userBeers.foundAt))
+    .limit(5);
+}
+
+export async function getUserBeerCollection(
+  userId: string,
+  page: number,
+  pageSize: number,
+): Promise<{
+  items: UserBeerCollectionDTO[];
+  totalItems: number;
+}> {
+  const offset = (page - 1) * pageSize;
+
+  const items = await db
+    .select({
+      beerId: beers.id,
+      beerName: beers.name,
+      breweryName: breweries.name,
+      countryName: countries.name,
+      styleName: beerStyles.name,
+      volumeMl: beers.volumeMl,
+      abv: beers.abv,
+      imageUrl: beerImages.imageUrl,
+      collectedAt: userBeers.foundAt,
+    })
+    .from(userBeers)
+    .innerJoin(beers, eq(userBeers.beerId, beers.id))
+    .innerJoin(breweries, eq(beers.breweryId, breweries.id))
+    .innerJoin(countries, eq(beers.countryId, countries.id))
+    .leftJoin(beerStyles, eq(beers.styleId, beerStyles.id))
+    .leftJoin(approvedBeerImages, eq(approvedBeerImages.beerId, beers.id))
+    .leftJoin(beerImages, eq(beerImages.id, approvedBeerImages.imageId))
+    .where(and(eq(userBeers.userId, userId), eq(beers.status, "approved")))
+    .orderBy(desc(userBeers.foundAt))
+    .limit(pageSize)
+    .offset(offset);
+
+  const totalResult = await db
+    .select({ count: count() })
+    .from(userBeers)
+    .innerJoin(beers, eq(userBeers.beerId, beers.id))
+    .innerJoin(breweries, eq(beers.breweryId, breweries.id))
+    .innerJoin(countries, eq(beers.countryId, countries.id))
+    .leftJoin(beerStyles, eq(beers.styleId, beerStyles.id))
+    .leftJoin(approvedBeerImages, eq(approvedBeerImages.beerId, beers.id))
+    .leftJoin(beerImages, eq(beerImages.id, approvedBeerImages.imageId))
+    .where(and(eq(userBeers.userId, userId), eq(beers.status, "approved")));
+
+  return {
+    items,
+    totalItems: totalResult[0]?.count ?? 0,
+  };
+}
+
+export async function getBeerDetails(
+  beerId: number,
+): Promise<BeerDetailsDTO | null> {
+  const rows = await db
+    .select({
+      beerId: beers.id,
+      beerName: beers.name,
+      breweryId: breweries.id,
+      breweryName: breweries.name,
+      countryId: countries.id,
+      countryName: countries.name,
+      styleId: beerStyles.id,
+      styleName: beerStyles.name,
+      volumeMl: beers.volumeMl,
+      abv: beers.abv,
+      ibu: beers.ibu,
+      ebc: beers.ebc,
+      ebu: beers.ebu,
+      eanBarcode: beers.eanBarcode,
+      imageUrl: beerImages.imageUrl,
+      createdAt: beers.createdAt,
+    })
+    .from(beers)
+    .innerJoin(
+      breweries,
+      and(eq(beers.breweryId, breweries.id), eq(breweries.status, "approved")),
+    )
+    .innerJoin(countries, eq(beers.countryId, countries.id))
+    .leftJoin(
+      beerStyles,
+      and(eq(beers.styleId, beerStyles.id), eq(beerStyles.status, "approved")),
+    )
+    .leftJoin(
+      beerImages,
+      and(eq(beerImages.beerId, beers.id), eq(beerImages.status, "approved")),
+    )
+    .where(and(eq(beers.id, beerId), eq(beers.status, "approved")))
+    .orderBy(desc(beerImages.createdAt));
+
+  if (rows.length === 0) {
+    return null;
+  }
+
+  const [firstRow] = rows;
+  const imageUrls = rows
+    .map((row) => row.imageUrl)
+    .filter((imageUrl): imageUrl is string => Boolean(imageUrl));
+
+  return {
+    beerId: firstRow.beerId,
+    beerName: firstRow.beerName,
+    breweryId: firstRow.breweryId,
+    breweryName: firstRow.breweryName,
+    countryId: firstRow.countryId,
+    countryName: firstRow.countryName,
+    styleId: firstRow.styleId,
+    styleName: firstRow.styleName,
+    volumeMl: firstRow.volumeMl,
+    abv: firstRow.abv,
+    ibu: firstRow.ibu,
+    ebc: firstRow.ebc,
+    ebu: firstRow.ebu,
+    eanBarcode: firstRow.eanBarcode,
+    imageUrls,
+    createdAt: firstRow.createdAt,
+  };
 }
 
 export async function searchBeers({
