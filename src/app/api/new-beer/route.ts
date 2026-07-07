@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { db } from "@/db";
-import { beers, beerImages } from "@/db/schema";
+import { beers, beerImages, userBeers } from "@/db/schema";
 import { resizeImage, uploadToCloudinary } from "@/lib/image";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
@@ -67,6 +67,14 @@ export async function POST(req: Request) {
       mimeType: file.type,
       uploadedByUserId: session.user.id,
     });
+
+    await db
+      .insert(userBeers)
+      .values({
+        userId: session.user.id,
+        beerId: beer.id,
+      })
+      .onConflictDoNothing();
 
     return NextResponse.json({
       success: true,
