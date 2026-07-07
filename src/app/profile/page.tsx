@@ -20,7 +20,9 @@ export default function ProfilePage() {
 
       <p className="mt-4 max-w-2xl text-lg leading-8 text-slate-600">
         Username {session?.user.username} <br />
-        User ID {session?.user.id}
+        User email {session?.user.email} <br />
+        User ID {session?.user.id} <br />
+        User role {session?.user.role}
       </p>
     </section>
   );
