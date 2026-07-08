@@ -1,5 +1,6 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
+import Link from "next/link";
 
 const session = await getServerSession(authOptions);
 
@@ -24,6 +25,13 @@ export default function ProfilePage() {
         User ID {session?.user.id} <br />
         User role {session?.user.role}
       </p>
+
+      <Link
+        href="/profile/collection"
+        className="text-sm font-medium text-blue-600 hover:underline"
+      >
+        View my beer collection →
+      </Link>
     </section>
   );
 }
