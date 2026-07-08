@@ -8,7 +8,7 @@ import {
   userBeers,
   users,
 } from "@/db/schema";
-import { and, count, desc, eq, ilike, max, or } from "drizzle-orm";
+import { and, count, desc, eq, ilike, or, sql } from "drizzle-orm";
 
 export type BeerSearchDTO = {
   id: number;
@@ -107,7 +107,7 @@ export type AddBeerToUserCollectionResult =
 const approvedBeerImages = db
   .select({
     beerId: beerImages.beerId,
-    imageId: max(beerImages.id),
+    imageId: sql`min(${beerImages.id})`.as("imageId"),
   })
   .from(beerImages)
   .where(eq(beerImages.status, "approved"))
