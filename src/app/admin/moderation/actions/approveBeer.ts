@@ -4,6 +4,7 @@ import { db } from "@/db";
 import { beers } from "@/db/schema";
 import { requireAdmin } from "@/lib/auth/requireAdmin";
 import { eq } from "drizzle-orm";
+import { ModerationActionState } from "./moderationActionState";
 
 function getNullableString(formData: FormData, key: string) {
   const value = formData.get(key);
@@ -27,7 +28,10 @@ function getNullableInt(formData: FormData, key: string) {
   return Number.isNaN(parsed) ? null : parsed;
 }
 
-export async function approveBeer(formData: FormData) {
+export async function approveBeer(
+  _prevState: ModerationActionState,
+  formData: FormData,
+): Promise<ModerationActionState> {
   const session = await requireAdmin();
   const adminId = session.user.id;
   const beerId = Number(formData.get("beerId"));
@@ -59,4 +63,10 @@ export async function approveBeer(formData: FormData) {
       verifiedByAdminId: adminId,
     })
     .where(eq(beers.id, beerId));
+
+  return {
+    success: true,
+    message: "Beer approved successfully.",
+    status: "approved",
+  };
 }
