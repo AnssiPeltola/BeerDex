@@ -4,6 +4,7 @@ import { db } from "@/db";
 import { breweries } from "@/db/schema";
 import { requireAdmin } from "@/lib/auth/requireAdmin";
 import { eq } from "drizzle-orm";
+import { redirect } from "next/navigation";
 
 export async function approveBrewery(formData: FormData) {
   const session = await requireAdmin();
@@ -30,4 +31,6 @@ export async function approveBrewery(formData: FormData) {
       verifiedByAdminId: adminId,
     })
     .where(eq(breweries.id, breweryId));
+
+  redirect("/admin/moderation?tab=breweries&toast=brewery-approved");
 }
