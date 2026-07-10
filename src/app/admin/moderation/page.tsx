@@ -2,6 +2,7 @@ import { BeerModeration } from "./components/BeerModeration";
 import { BeerStyleModeration } from "./components/BeerStyleModeration";
 import { BreweryModeration } from "./components/BreweryModeration";
 import { ModerationTabs } from "./components/ModerationTabs";
+import { ModerationToast } from "./components/ModerationToast";
 
 const validTabs = ["beers", "breweries", "styles"] as const;
 
@@ -25,6 +26,7 @@ export default async function ModerationPage({
 
   return (
     <div className="mx-auto max-w-7xl space-y-8 px-4 py-8 sm:px-6 lg:px-8">
+      <ModerationToast />
       <header className="space-y-2">
         <h1 className="text-3xl font-semibold tracking-tight text-slate-900">
           Moderation
