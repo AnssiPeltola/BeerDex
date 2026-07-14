@@ -46,8 +46,9 @@ export default async function BeerCollectionPage({
       ) : (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
           {items.map((beer) => (
-            <div
+            <Link
               key={beer.beerId}
+              href={`/beers/${beer.beerId}`}
               className="flex gap-3 rounded-lg border border-gray-200 p-3"
             >
               <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded bg-gray-100">
@@ -85,7 +86,7 @@ export default async function BeerCollectionPage({
                   </p>
                 )}
               </div>
-            </div>
+            </Link>
           ))}
         </div>
       )}

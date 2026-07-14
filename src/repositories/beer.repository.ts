@@ -8,7 +8,7 @@ import {
   userBeers,
   users,
 } from "@/db/schema";
-import { and, count, desc, eq, ilike, or, sql } from "drizzle-orm";
+import { and, count, desc, eq, ilike, or, sql, isNull } from "drizzle-orm";
 
 export type BeerSearchDTO = {
   id: number;
@@ -86,6 +86,27 @@ export type BeerDetailsDTO = {
   ebu: number | null;
   eanBarcode: string | null;
   imageUrls: string[];
+  createdAt: Date | null;
+};
+
+export type BeerDetails = {
+  beerId: number;
+  beerName: string;
+
+  breweryName: string;
+  countryName: string;
+  styleName: string | null;
+
+  imageUrl: string | null;
+
+  abv: string | null;
+  ibu: number | null;
+  ebu: number | null;
+  ebc: number | null;
+  volumeMl: number | null;
+  eanBarcode: string | null;
+
+  createdByUsername: string | null;
   createdAt: Date | null;
 };
 
@@ -419,4 +440,46 @@ export async function searchBeers({
     beers: results,
     totalCount,
   };
+}
+
+export async function getBeerById(beerId: number): Promise<BeerDetails | null> {
+  const [beer] = await db
+    .select({
+      beerId: beers.id,
+      beerName: beers.name,
+
+      breweryName: breweries.name,
+      countryName: countries.name,
+      styleName: beerStyles.name,
+
+      imageUrl: beerImages.imageUrl,
+
+      abv: beers.abv,
+      ibu: beers.ibu,
+      ebu: beers.ebu,
+      ebc: beers.ebc,
+      volumeMl: beers.volumeMl,
+      eanBarcode: beers.eanBarcode,
+
+      createdByUsername: users.username,
+      createdAt: beers.createdAt,
+    })
+    .from(beers)
+    .innerJoin(breweries, eq(beers.breweryId, breweries.id))
+    .innerJoin(countries, eq(beers.countryId, countries.id))
+    .leftJoin(beerStyles, eq(beers.styleId, beerStyles.id))
+    .leftJoin(users, eq(beers.createdByUserId, users.id))
+    .leftJoin(approvedBeerImages, eq(approvedBeerImages.beerId, beers.id))
+    .leftJoin(beerImages, eq(beerImages.id, approvedBeerImages.imageId))
+    .where(
+      and(
+        eq(beers.id, beerId),
+        eq(beers.status, "approved"),
+        eq(breweries.status, "approved"),
+        or(isNull(beers.styleId), eq(beerStyles.status, "approved")),
+      ),
+    )
+    .limit(1);
+
+  return beer ?? null;
 }

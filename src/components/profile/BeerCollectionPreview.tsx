@@ -35,8 +35,9 @@ export default function BeerCollectionPreview({ beers }: Props) {
       ) : (
         <div className="space-y-4">
           {beers.map((beer) => (
-            <div
+            <Link
               key={beer.beerId}
+              href={`/beers/${beer.beerId}`}
               className="flex items-center gap-4 rounded-xl border border-slate-200 p-3 transition hover:bg-slate-50"
             >
               <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-lg bg-slate-100">
@@ -78,7 +79,7 @@ export default function BeerCollectionPreview({ beers }: Props) {
                   ? new Date(beer.collectedAt).toLocaleDateString()
                   : "Unknown"}
               </div>
-            </div>
+            </Link>
           ))}
         </div>
       )}

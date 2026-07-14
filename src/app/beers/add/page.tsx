@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { PaginationControls } from "@/components/ui/pagination-controls";
+import Link from "next/link";
 
 type BeerSearchResult = {
   id: number;
@@ -309,7 +310,12 @@ export default function AddBeerPage() {
                   >
                     <div>
                       <div className="flex items-center gap-2 font-medium">
-                        <span>{beer.name}</span>
+                        <Link
+                          href={`/beers/${beer.id}`}
+                          className="hover:text-blue-600 hover:underline"
+                        >
+                          {beer.name}
+                        </Link>
 
                         {beer.status === "pending" && (
                           <span className="text-xs text-yellow-600 border border-yellow-300 px-1 rounded">
