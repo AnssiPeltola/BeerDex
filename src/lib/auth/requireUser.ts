@@ -6,7 +6,7 @@ export async function requireUser() {
   const session = await getServerSession(authOptions);
 
   if (!session || !session.user?.id) {
-    redirect("/login");
+    redirect("/auth");
   }
 
   return session;
