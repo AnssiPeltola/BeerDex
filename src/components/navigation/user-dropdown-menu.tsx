@@ -55,7 +55,7 @@ export default function UserDropdownMenu({
       </button>
 
       {isOpen ? (
-        <div className="absolute right-0 top-full z-20 mt-3 w-52 overflow-hidden rounded-2xl border border-slate-200 bg-white p-2 shadow-[0_20px_50px_-20px_rgba(15,23,42,0.35)]">
+        <div className="absolute right-0 top-full z-9999 mt-3 w-52 overflow-hidden rounded-2xl border border-slate-200 bg-white p-2 shadow-[0_20px_50px_-20px_rgba(15,23,42,0.35)]">
           <div className="px-3 py-2">
             <p className="text-sm font-semibold text-slate-900">
               {username || "Account"}
