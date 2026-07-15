@@ -15,6 +15,17 @@ export default function CharacteristicsStep() {
     return Number.isNaN(parsed) ? null : parsed;
   };
 
+  const parseIntegerInput = (value: string) => {
+    const trimmed = value.trim();
+
+    if (trimmed === "") {
+      return null;
+    }
+
+    const parsed = Number(trimmed);
+    return Number.isNaN(parsed) ? null : parsed;
+  };
+
   return (
     <div className="space-y-4">
       <input
@@ -22,7 +33,7 @@ export default function CharacteristicsStep() {
         step="0.1"
         inputMode="decimal"
         className="w-full border p-2"
-        placeholder="ABV (%)"
+        placeholder="ABV (%) - Alcohol by Volume (optional)"
         value={data.abv ?? ""}
         onChange={(e) => updateData({ abv: parseDecimalInput(e.target.value) })}
       />
@@ -30,30 +41,30 @@ export default function CharacteristicsStep() {
       <input
         type="number"
         className="w-full border p-2"
-        placeholder="IBU"
+        placeholder="IBU - International Bitterness Unit (optional)"
         value={data.ibu ?? ""}
-        onChange={(e) => updateData({ ibu: Number(e.target.value) })}
+        onChange={(e) => updateData({ ibu: parseIntegerInput(e.target.value) })}
       />
 
       <input
         type="number"
         className="w-full border p-2"
-        placeholder="EBU"
+        placeholder="EBU - European Bitterness Unit (optional)"
         value={data.ebu ?? ""}
-        onChange={(e) => updateData({ ebu: Number(e.target.value) })}
+        onChange={(e) => updateData({ ebu: parseIntegerInput(e.target.value) })}
       />
 
       <input
         type="number"
         className="w-full border p-2"
-        placeholder="EBC"
+        placeholder="EBC - European Brewing Convention Scale (optional)"
         value={data.ebc ?? ""}
-        onChange={(e) => updateData({ ebc: Number(e.target.value) })}
+        onChange={(e) => updateData({ ebc: parseIntegerInput(e.target.value) })}
       />
 
       <input
         className="w-full border p-2"
-        placeholder="EAN barcode"
+        placeholder="EAN barcode (optional)"
         value={data.eanBarcode}
         onChange={(e) => updateData({ eanBarcode: e.target.value })}
       />

@@ -37,19 +37,21 @@ export default function ReviewStep() {
         <h3 className="font-semibold">Characteristics</h3>
 
         <p>
-          <span className="font-medium">ABV:</span> {data.abv}%
+          <span className="font-medium">ABV:</span>{" "}
+          {data.abv !== null ? `${data.abv}%` : "Not provided"}
         </p>
         <p>
-          <span className="font-medium">IBU:</span> {data.ibu}
+          <span className="font-medium">IBU:</span> {data.ibu ?? "Not provided"}
         </p>
         <p>
-          <span className="font-medium">EBU:</span> {data.ebu}
+          <span className="font-medium">EBU:</span> {data.ebu ?? "Not provided"}
         </p>
         <p>
-          <span className="font-medium">EBC:</span> {data.ebc}
+          <span className="font-medium">EBC:</span> {data.ebc ?? "Not provided"}
         </p>
         <p>
-          <span className="font-medium">EAN:</span> {data.eanBarcode}
+          <span className="font-medium">EAN:</span>{" "}
+          {data.eanBarcode || "Not provided"}
         </p>
       </div>
 

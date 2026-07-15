@@ -31,22 +31,22 @@ export default function ImageUploadStep() {
   };
 
   // Image upload test
-  const testUpload = async () => {
-    if (!file) return;
+  // const testUpload = async () => {
+  //   if (!file) return;
 
-    const formData = new FormData();
-    formData.append("file", file);
+  //   const formData = new FormData();
+  //   formData.append("file", file);
 
-    const res = await fetch("/api/test-upload", {
-      method: "POST",
-      body: formData,
-    });
+  //   const res = await fetch("/api/test-upload", {
+  //     method: "POST",
+  //     body: formData,
+  //   });
 
-    const data = await res.json();
+  //   const data = await res.json();
 
-    console.log("UPLOAD RESULT:", data);
-    alert(data.url);
-  };
+  //   console.log("UPLOAD RESULT:", data);
+  //   alert(data.url);
+  // };
 
   return (
     <div className="space-y-4">
@@ -94,13 +94,6 @@ export default function ImageUploadStep() {
           onChange={(e) => handleFile(e.target.files?.[0])}
         />
       </div>
-      <button
-        className="bg-black text-white px-4 py-2"
-        onClick={testUpload}
-        disabled={!file}
-      >
-        Test Upload to Cloudinary
-      </button>
     </div>
   );
 }
