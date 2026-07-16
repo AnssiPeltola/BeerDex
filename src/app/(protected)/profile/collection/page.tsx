@@ -2,7 +2,10 @@ import Link from "next/link";
 import Image from "next/image";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import { getUserBeerCollection } from "@/repositories/beer.repository";
+import {
+  getUserBeerCollection,
+  getApprovedBeerCount,
+} from "@/repositories/beer.repository";
 
 const PAGE_SIZE = 20;
 
@@ -35,9 +38,15 @@ export default async function BeerCollectionPage({
   );
   const totalPages = Math.max(1, Math.ceil(totalItems / PAGE_SIZE));
 
+  const totalApprovedBeers = await getApprovedBeerCount();
+
   return (
     <div className="mx-auto max-w-5xl px-4 py-8">
       <h1 className="mb-6 text-2xl font-bold">My Beer Collection</h1>
+
+      <p>
+        Collection: {totalItems} / {totalApprovedBeers} beers
+      </p>
 
       {items.length === 0 ? (
         <p className="text-gray-500">

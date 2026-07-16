@@ -1,7 +1,12 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import { getUserBeerCollectionPreview } from "@/repositories/beer.repository";
+import {
+  getUserBeerCollectionPreview,
+  getApprovedBeerCount,
+  getUserBeerCount,
+} from "@/repositories/beer.repository";
 import BeerCollectionPreview from "@/components/profile/BeerCollectionPreview";
+import BeerCollectionProgress from "@/components/profile/BeerCollectionProgress";
 
 export default async function ProfilePage() {
   const session = await getServerSession(authOptions);
@@ -11,6 +16,8 @@ export default async function ProfilePage() {
   }
 
   const beers = await getUserBeerCollectionPreview(session.user.id);
+  const collected = await getUserBeerCount(session.user.id);
+  const total = await getApprovedBeerCount();
 
   return (
     <section className="rounded-3xl border border-white/70 bg-white/90 p-8 shadow-[0_24px_80px_-24px_rgba(15,23,42,0.18)] backdrop-blur sm:p-12">
@@ -32,6 +39,8 @@ export default async function ProfilePage() {
         User ID {session.user.id} <br />
         User role {session.user.role}
       </p>
+
+      <BeerCollectionProgress collected={collected} total={total} />
 
       <BeerCollectionPreview beers={beers} />
     </section>
