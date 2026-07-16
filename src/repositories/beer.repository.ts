@@ -483,3 +483,22 @@ export async function getBeerById(beerId: number): Promise<BeerDetails | null> {
 
   return beer ?? null;
 }
+
+export async function getApprovedBeerCount(): Promise<number> {
+  const result = await db
+    .select({ count: count() })
+    .from(beers)
+    .where(eq(beers.status, "approved"));
+
+  return result[0]?.count ?? 0;
+}
+
+export async function getUserBeerCount(userId: string): Promise<number> {
+  const result = await db
+    .select({ count: count() })
+    .from(userBeers)
+    .innerJoin(beers, eq(userBeers.beerId, beers.id))
+    .where(and(eq(userBeers.userId, userId), eq(beers.status, "approved")));
+
+  return result[0]?.count ?? 0;
+}
