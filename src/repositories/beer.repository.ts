@@ -8,7 +8,17 @@ import {
   userBeers,
   users,
 } from "@/db/schema";
-import { and, count, desc, eq, ilike, or, sql, isNull } from "drizzle-orm";
+import {
+  and,
+  count,
+  desc,
+  eq,
+  ilike,
+  or,
+  sql,
+  isNull,
+  countDistinct,
+} from "drizzle-orm";
 
 export type BeerSearchDTO = {
   id: number;
@@ -108,6 +118,15 @@ export type BeerDetails = {
 
   createdByUsername: string | null;
   createdAt: Date | null;
+};
+
+export type UserCollectionStatsDTO = {
+  uniqueBreweries: number;
+  uniqueCountries: number;
+  uniqueStyles: number;
+  averageAbv: number | null;
+  strongestBeerAbv: number | null;
+  weakestBeerAbv: number | null;
 };
 
 export type AddBeerToUserCollectionResult =
@@ -501,4 +520,33 @@ export async function getUserBeerCount(userId: string): Promise<number> {
     .where(and(eq(userBeers.userId, userId), eq(beers.status, "approved")));
 
   return result[0]?.count ?? 0;
+}
+
+export async function getUserCollectionStats(
+  userId: string,
+): Promise<UserCollectionStatsDTO> {
+  const [result] = await db
+    .select({
+      uniqueBreweries: countDistinct(beers.breweryId),
+      uniqueCountries: countDistinct(beers.countryId),
+      uniqueStyles: countDistinct(beers.styleId),
+
+      averageAbv: sql<number | null>`avg(${beers.abv})`,
+      strongestBeerAbv: sql<number | null>`max(${beers.abv})`,
+      weakestBeerAbv: sql<number | null>`min(${beers.abv})`,
+    })
+    .from(userBeers)
+    .innerJoin(beers, eq(userBeers.beerId, beers.id))
+    .where(and(eq(userBeers.userId, userId), eq(beers.status, "approved")));
+
+  return {
+    uniqueBreweries: result.uniqueBreweries,
+    uniqueCountries: result.uniqueCountries,
+    uniqueStyles: result.uniqueStyles,
+    averageAbv: result.averageAbv !== null ? Number(result.averageAbv) : null,
+    strongestBeerAbv:
+      result.strongestBeerAbv !== null ? Number(result.strongestBeerAbv) : null,
+    weakestBeerAbv:
+      result.weakestBeerAbv !== null ? Number(result.weakestBeerAbv) : null,
+  };
 }

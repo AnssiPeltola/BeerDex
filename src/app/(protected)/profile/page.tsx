@@ -4,9 +4,11 @@ import {
   getUserBeerCollectionPreview,
   getApprovedBeerCount,
   getUserBeerCount,
+  getUserCollectionStats,
 } from "@/repositories/beer.repository";
 import BeerCollectionPreview from "@/components/profile/BeerCollectionPreview";
 import BeerCollectionProgress from "@/components/profile/BeerCollectionProgress";
+import CollectionStatistics from "@/components/profile/CollectionStatistics";
 
 export default async function ProfilePage() {
   const session = await getServerSession(authOptions);
@@ -18,6 +20,7 @@ export default async function ProfilePage() {
   const beers = await getUserBeerCollectionPreview(session.user.id);
   const collected = await getUserBeerCount(session.user.id);
   const total = await getApprovedBeerCount();
+  const stats = await getUserCollectionStats(session.user.id);
 
   return (
     <section className="rounded-3xl border border-white/70 bg-white/90 p-8 shadow-[0_24px_80px_-24px_rgba(15,23,42,0.18)] backdrop-blur sm:p-12">
@@ -41,6 +44,15 @@ export default async function ProfilePage() {
       </p>
 
       <BeerCollectionProgress collected={collected} total={total} />
+
+      <CollectionStatistics
+        uniqueBreweries={stats.uniqueBreweries}
+        uniqueCountries={stats.uniqueCountries}
+        uniqueStyles={stats.uniqueStyles}
+        averageAbv={stats.averageAbv}
+        strongestBeerAbv={stats.strongestBeerAbv}
+        weakestBeerAbv={stats.weakestBeerAbv}
+      />
 
       <BeerCollectionPreview beers={beers} />
     </section>
