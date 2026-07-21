@@ -39,6 +39,7 @@ Users can submit:
 - New breweries
 - New beer styles
 - Beer images
+- Uploaded images are validated for file type and size, then converted and stored as WebP on Cloudinary.
 
 Submissions require administrator approval before becoming publicly visible.
 
