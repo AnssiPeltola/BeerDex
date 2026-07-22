@@ -160,6 +160,8 @@ export const userBeers = pgTable(
       .notNull()
       .references(() => beers.id, { onDelete: "cascade" }),
 
+    rating: integer("rating"),
+
     foundAt: timestamp("found_at", { withTimezone: true }).defaultNow(),
   },
   (table) => [unique().on(table.userId, table.beerId)],
