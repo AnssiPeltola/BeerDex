@@ -550,3 +550,34 @@ export async function getUserCollectionStats(
       result.weakestBeerAbv !== null ? Number(result.weakestBeerAbv) : null,
   };
 }
+
+export async function updateUserBeerRating(
+  userId: string,
+  beerId: number,
+  rating: number | null,
+): Promise<void> {
+  await db
+    .update(userBeers)
+    .set({ rating })
+    .where(and(eq(userBeers.userId, userId), eq(userBeers.beerId, beerId)));
+}
+
+export async function getBeerAverageRating(beerId: number): Promise<{
+  averageRating: number | null;
+  ratingCount: number;
+}> {
+  const result = await db
+    .select({
+      averageRating: sql<
+        number | null
+      >`ROUND(AVG(${userBeers.rating})::numeric, 2)`,
+      ratingCount: count(userBeers.rating),
+    })
+    .from(userBeers)
+    .where(eq(userBeers.beerId, beerId));
+
+  return {
+    averageRating: result[0]?.averageRating ?? null,
+    ratingCount: result[0]?.ratingCount ?? 0,
+  };
+}
