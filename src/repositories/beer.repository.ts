@@ -581,3 +581,19 @@ export async function getBeerAverageRating(beerId: number): Promise<{
     ratingCount: result[0]?.ratingCount ?? 0,
   };
 }
+
+export async function getUserBeerRating(
+  userId: string,
+  beerId: number,
+): Promise<number | null | undefined> {
+  const result = await db
+    .select({ rating: userBeers.rating })
+    .from(userBeers)
+    .where(and(eq(userBeers.userId, userId), eq(userBeers.beerId, beerId)))
+    .limit(1);
+
+  // undefined = beer not in collection
+  // null = beer in collection but not rated
+  // number = existing rating
+  return result[0]?.rating;
+}

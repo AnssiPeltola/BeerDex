@@ -1,7 +1,15 @@
 import Image from "next/image";
 import { notFound } from "next/navigation";
 
-import { getBeerById } from "@/repositories/beer.repository";
+import {
+  getBeerAverageRating,
+  getBeerById,
+  getUserBeerRating,
+} from "@/repositories/beer.repository";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
+import { BeerRating } from "@/components/beer/BeerRating";
+import { UserBeerRating } from "@/components/beer/UserBeerRating";
 
 function formatDate(date: Date | null) {
   if (!date) return null;
@@ -32,6 +40,14 @@ export default async function BeerPage({
   if (!beer) {
     notFound();
   }
+
+  const session = await getServerSession(authOptions);
+
+  const userRating = session?.user?.id
+    ? await getUserBeerRating(session.user.id, id)
+    : undefined;
+
+  const averageRating = await getBeerAverageRating(id);
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-8">
@@ -90,6 +106,30 @@ export default async function BeerPage({
               )}
             </div>
           </div>
+
+          {/* Community rating - always visible */}
+          <div className="mt-8">
+            <h2 className="mb-3 text-xl font-semibold">Community rating</h2>
+
+            <div className="flex items-center gap-3">
+              <BeerRating value={averageRating.averageRating ?? 0} readOnly />
+
+              <span className="text-sm text-gray-600">
+                {averageRating.averageRating
+                  ? `${averageRating.averageRating}/5 (${averageRating.ratingCount} ratings)`
+                  : "No ratings yet"}
+              </span>
+            </div>
+          </div>
+
+          {/* Your rating - only visible if user owns the beer */}
+          {userRating !== undefined && (
+            <div className="mt-8">
+              <h2 className="mb-3 text-xl font-semibold">Your rating</h2>
+
+              <UserBeerRating beerId={id} initialRating={userRating} />
+            </div>
+          )}
 
           {/* Community information */}
           <div className="mt-8">
