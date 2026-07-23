@@ -204,10 +204,13 @@ export default function AddBeerPage() {
     <div className="mx-auto max-w-3xl p-6">
       <div className="space-y-6">
         <div>
-          <h1 className="text-2xl font-bold">Add Beer to Collection</h1>
+          <h1 className="text-2xl font-bold">
+            Discover Beers for Your Collection
+          </h1>
 
           <p className="mt-1 text-sm text-muted-foreground">
-            Search by beer name, brewery, or EAN barcode.
+            Search BeerDex by beer name, brewery, or EAN barcode to add beers to
+            your collection.
           </p>
         </div>
 
