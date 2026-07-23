@@ -10,6 +10,7 @@ type BeerSearchResult = {
   name: string;
   breweryName: string;
   countryName: string;
+  styleName: string;
   volumeMl: number | null;
   abv: string | null;
   eanBarcode: string | null;
@@ -325,7 +326,8 @@ export default function AddBeerPage() {
                       </div>
 
                       <div className="text-sm text-muted-foreground">
-                        {beer.breweryName} • {beer.countryName}
+                        {beer.breweryName} • {beer.countryName} •{" "}
+                        {beer.styleName}
                         {beer.volumeMl ? ` • ${beer.volumeMl}ml` : ""}
                         {beer.abv ? ` • ${beer.abv}%` : ""}
                       </div>

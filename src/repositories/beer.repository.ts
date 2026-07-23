@@ -25,6 +25,7 @@ export type BeerSearchDTO = {
   name: string;
   breweryName: string;
   countryName: string;
+  styleName: string;
   volumeMl: number | null;
   abv: string | null;
   eanBarcode: string | null;
@@ -412,6 +413,7 @@ export async function searchBeers({
       name: beers.name,
       breweryName: breweries.name,
       countryName: countries.name,
+      styleName: beerStyles.name,
       volumeMl: beers.volumeMl,
       abv: beers.abv,
       eanBarcode: beers.eanBarcode,
@@ -420,6 +422,7 @@ export async function searchBeers({
     .from(beers)
     .innerJoin(breweries, eq(beers.breweryId, breweries.id))
     .innerJoin(countries, eq(beers.countryId, countries.id))
+    .innerJoin(beerStyles, eq(beers.styleId, beerStyles.id))
     .where(
       and(
         or(eq(beers.status, "approved"), eq(beers.status, "pending")),
