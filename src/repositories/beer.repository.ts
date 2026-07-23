@@ -29,6 +29,7 @@ export type BeerSearchDTO = {
   volumeMl: number | null;
   abv: string | null;
   eanBarcode: string | null;
+  imageUrl: string | null;
 };
 
 type SearchBeersInput = {
@@ -418,11 +419,14 @@ export async function searchBeers({
       abv: beers.abv,
       eanBarcode: beers.eanBarcode,
       status: beers.status,
+      imageUrl: beerImages.imageUrl,
     })
     .from(beers)
     .innerJoin(breweries, eq(beers.breweryId, breweries.id))
     .innerJoin(countries, eq(beers.countryId, countries.id))
     .innerJoin(beerStyles, eq(beers.styleId, beerStyles.id))
+    .leftJoin(approvedBeerImages, eq(approvedBeerImages.beerId, beers.id))
+    .leftJoin(beerImages, eq(beerImages.id, approvedBeerImages.imageId))
     .where(
       and(
         or(eq(beers.status, "approved"), eq(beers.status, "pending")),

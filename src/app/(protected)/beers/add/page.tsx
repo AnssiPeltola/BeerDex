@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { PaginationControls } from "@/components/ui/pagination-controls";
 import Link from "next/link";
+import Image from "next/image";
 
 type BeerSearchResult = {
   id: number;
@@ -15,6 +16,7 @@ type BeerSearchResult = {
   abv: string | null;
   eanBarcode: string | null;
   status: "pending" | "approved";
+  imageUrl: string | null;
 };
 
 type BeerSearchResponse = {
@@ -309,34 +311,48 @@ export default function AddBeerPage() {
                     key={beer.id}
                     className="flex items-center justify-between rounded-lg border p-4"
                   >
-                    <div>
-                      <div className="flex items-center gap-2 font-medium">
-                        <Link
-                          href={`/beers/${beer.id}`}
-                          className="hover:text-blue-600 hover:underline"
-                        >
-                          {beer.name}
-                        </Link>
+                    <div className="flex items-center gap-4">
+                      {/* Beer image */}
+                      <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-lg border bg-gray-100">
+                        <Image
+                          src={beer.imageUrl ?? "/placeholder_beer.webp"}
+                          alt={beer.name}
+                          fill
+                          sizes="80px"
+                          className="object-cover"
+                        />
+                      </div>
 
-                        {beer.status === "pending" && (
-                          <span className="text-xs text-yellow-600 border border-yellow-300 px-1 rounded">
-                            Pending
-                          </span>
+                      {/* Beer info */}
+                      <div>
+                        <div className="flex items-center gap-2 font-medium">
+                          <Link
+                            href={`/beers/${beer.id}`}
+                            className="hover:text-blue-600 hover:underline"
+                          >
+                            {beer.name}
+                          </Link>
+
+                          {beer.status === "pending" && (
+                            <span className="text-xs text-yellow-600 border border-yellow-300 px-1 rounded">
+                              Pending
+                            </span>
+                          )}
+                        </div>
+
+                        <div className="text-sm text-muted-foreground">
+                          {beer.breweryName} • {beer.countryName} •{" "}
+                          {beer.styleName}
+                          {beer.volumeMl ? ` • ${beer.volumeMl}ml` : ""}
+                          {beer.abv ? ` • ${beer.abv}%` : ""}
+                        </div>
+
+                        {beer.eanBarcode && (
+                          <div className="mt-1 text-xs text-muted-foreground">
+                            EAN: {beer.eanBarcode}
+                          </div>
                         )}
                       </div>
-
-                      <div className="text-sm text-muted-foreground">
-                        {beer.breweryName} • {beer.countryName} •{" "}
-                        {beer.styleName}
-                        {beer.volumeMl ? ` • ${beer.volumeMl}ml` : ""}
-                        {beer.abv ? ` • ${beer.abv}%` : ""}
-                      </div>
-
-                      {beer.eanBarcode && (
-                        <div className="mt-1 text-xs text-muted-foreground">
-                          EAN: {beer.eanBarcode}
-                        </div>
-                      )}
                     </div>
 
                     <button
