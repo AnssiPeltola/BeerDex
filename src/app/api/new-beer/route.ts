@@ -73,6 +73,7 @@ export async function POST(req: Request) {
       .values({
         userId: session.user.id,
         beerId: beer.id,
+        rating: data.rating ?? null,
       })
       .onConflictDoNothing();
 
