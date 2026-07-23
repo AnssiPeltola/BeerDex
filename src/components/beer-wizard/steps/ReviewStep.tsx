@@ -1,9 +1,10 @@
 "use client";
 
+import { BeerRating } from "@/components/beer/BeerRating";
 import { useBeerWizardStore } from "@/stores/beer-wizard-store";
 
 export default function ReviewStep() {
-  const { data } = useBeerWizardStore();
+  const { data, updateData } = useBeerWizardStore();
 
   return (
     <div className="space-y-6">
@@ -53,6 +54,31 @@ export default function ReviewStep() {
           <span className="font-medium">EAN:</span>{" "}
           {data.eanBarcode || "Not provided"}
         </p>
+      </div>
+
+      <div className="border p-4 space-y-3">
+        <h3 className="font-semibold">Your rating (optional)</h3>
+
+        <BeerRating
+          value={data.rating ?? 0}
+          onChange={(rating) => updateData({ rating })}
+        />
+
+        <p className="text-sm text-gray-600">
+          {data.rating === null
+            ? "Tap a beer mug to rate this beer, or leave it unrated."
+            : `You rated this beer ${data.rating}/5`}
+        </p>
+
+        {data.rating !== null && (
+          <button
+            type="button"
+            onClick={() => updateData({ rating: null })}
+            className="text-sm text-gray-500 hover:text-gray-700"
+          >
+            Clear rating
+          </button>
+        )}
       </div>
 
       {/* Image */}

@@ -85,6 +85,7 @@ export default function AddBeerWizard() {
           ebu: data.ebu,
           ebc: data.ebc,
           eanBarcode: data.eanBarcode,
+          rating: data.rating,
         }),
       );
 

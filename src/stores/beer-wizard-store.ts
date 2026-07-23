@@ -27,6 +27,9 @@ export interface BeerWizardData {
 
   // Step 3 - Image Upload
   image: File | null;
+
+  // Step 4 - Rating / Review
+  rating: number | null;
 }
 
 interface BeerWizardStore {
@@ -59,6 +62,9 @@ const initialData: BeerWizardData = {
 
   // Step 3
   image: null,
+
+  // Step 4
+  rating: null,
 };
 
 export const useBeerWizardStore = create<BeerWizardStore>((set) => ({
