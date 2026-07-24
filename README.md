@@ -6,6 +6,18 @@ The project is built with modern web technologies including Next.js App Router, 
 
 ---
 
+## Highlights
+
+- Full-stack Next.js App Router application
+- Server Components and Server Actions
+- Repository pattern architecture
+- Type-safe database access with Drizzle ORM
+- Image processing with Sharp and Cloudinary
+- JWT authentication with role-based authorization
+- Moderated user-generated content workflow
+
+---
+
 ## Features
 
 ### Authentication
@@ -22,6 +34,8 @@ The project is built with modern web technologies including Next.js App Router, 
 - Browse approved beers
 - View detailed beer information
 - Search beers
+- View average community ratings
+- See how many users have collected each beer
 - Beer images hosted on Cloudinary
 
 ### Personal Collection
@@ -29,7 +43,9 @@ The project is built with modern web technologies including Next.js App Router, 
 - Add beers to your personal collection
 - View your collected beers
 - Collection preview on profile page
+- Rate beers in your collection
 - Paginated collection view
+- Collection statistics (unique breweries, countries, styles, ABV insights)
 
 ### Beer Submission
 
@@ -39,7 +55,7 @@ Users can submit:
 - New breweries
 - New beer styles
 - Beer images
-- Uploaded images are validated for file type and size, then converted and stored as WebP on Cloudinary.
+- Uploaded images are validated for file type and size, then converted and stored as WebP (Sharp library) on Cloudinary.
 
 Submissions require administrator approval before becoming publicly visible.
 
@@ -55,8 +71,10 @@ Administrators can:
 ### User Profile
 
 - View account information
-- View latest collected beers
-- Access complete beer collection
+- Collection progress
+- Collection statistics
+- Latest collected beers
+- Quick access to full collection
 
 ---
 
