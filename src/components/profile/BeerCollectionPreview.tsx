@@ -34,53 +34,100 @@ export default function BeerCollectionPreview({ beers }: Props) {
         </p>
       ) : (
         <div className="space-y-4">
-          {beers.map((beer) => (
-            <Link
-              key={beer.beerId}
-              href={`/beers/${beer.beerId}`}
-              className="flex items-center gap-4 rounded-xl border border-slate-200 p-3 transition hover:bg-slate-50"
-            >
-              <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-lg bg-slate-100">
-                {beer.imageUrl ? (
+          {beers.map((beer) =>
+            beer.status === "approved" ? (
+              <Link
+                key={beer.beerId}
+                href={`/beers/${beer.beerId}`}
+                className="flex items-center gap-4 rounded-xl border border-slate-200 p-3 transition hover:bg-slate-50"
+              >
+                <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-lg bg-slate-100">
+                  {beer.imageUrl ? (
+                    <Image
+                      src={beer.imageUrl}
+                      alt={beer.beerName}
+                      fill
+                      sizes="64px"
+                      className="object-cover"
+                    />
+                  ) : (
+                    <div className="flex h-full items-center justify-center text-xs text-slate-400">
+                      No image
+                    </div>
+                  )}
+                </div>
+
+                <div className="min-w-0 flex-1">
+                  <h3 className="truncate font-semibold text-slate-900">
+                    {beer.beerName}
+                  </h3>
+
+                  <p className="truncate text-sm text-slate-600">
+                    {beer.breweryName} • {beer.countryName}
+                  </p>
+
+                  <p className="text-sm text-slate-500">
+                    {beer.styleName ?? "Unknown style"}
+
+                    {beer.abv && <> • {beer.abv}%</>}
+
+                    {beer.volumeMl && <> • {beer.volumeMl} ml</>}
+                  </p>
+                </div>
+
+                <div className="text-right text-xs text-slate-500">
+                  {beer.collectedAt
+                    ? new Date(beer.collectedAt).toLocaleDateString()
+                    : "Unknown"}
+                </div>
+              </Link>
+            ) : (
+              <div
+                key={beer.beerId}
+                className="flex items-center gap-4 rounded-xl border border-amber-200 bg-amber-50/50 p-3"
+              >
+                <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-lg bg-slate-100">
                   <Image
-                    src={beer.imageUrl}
-                    alt={beer.beerName}
+                    src="/placeholder_beer.webp"
+                    alt="Pending beer placeholder"
                     fill
                     sizes="64px"
                     className="object-cover"
                   />
-                ) : (
-                  <div className="flex h-full items-center justify-center text-xs text-slate-400">
-                    No image
+                </div>
+
+                <div className="min-w-0 flex-1">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <h3 className="truncate font-semibold text-slate-900">
+                      {beer.beerName}
+                    </h3>
+
+                    <span className="rounded-full bg-amber-100 px-2.5 py-0.5 text-xs font-medium text-amber-800">
+                      Pending approval
+                    </span>
                   </div>
-                )}
+
+                  <p className="truncate text-sm text-slate-600">
+                    {beer.breweryName} • {beer.countryName}
+                  </p>
+
+                  <p className="text-sm text-slate-500">
+                    {beer.styleName ?? "Unknown style"}
+
+                    {beer.abv && <> • {beer.abv}%</>}
+
+                    {beer.volumeMl && <> • {beer.volumeMl} ml</>}
+                  </p>
+                </div>
+
+                <div className="text-right text-xs text-slate-500">
+                  {beer.collectedAt
+                    ? new Date(beer.collectedAt).toLocaleDateString()
+                    : "Unknown"}
+                </div>
               </div>
-
-              <div className="min-w-0 flex-1">
-                <h3 className="truncate font-semibold text-slate-900">
-                  {beer.beerName}
-                </h3>
-
-                <p className="truncate text-sm text-slate-600">
-                  {beer.breweryName} • {beer.countryName}
-                </p>
-
-                <p className="text-sm text-slate-500">
-                  {beer.styleName ?? "Unknown style"}
-
-                  {beer.abv && <> • {beer.abv}%</>}
-
-                  {beer.volumeMl && <> • {beer.volumeMl} ml</>}
-                </p>
-              </div>
-
-              <div className="text-right text-xs text-slate-500">
-                {beer.collectedAt
-                  ? new Date(beer.collectedAt).toLocaleDateString()
-                  : "Unknown"}
-              </div>
-            </Link>
-          ))}
+            ),
+          )}
         </div>
       )}
     </section>

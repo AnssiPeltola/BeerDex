@@ -2,10 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import {
-  getUserBeerCollection,
-  getApprovedBeerCount,
-} from "@/repositories/beer.repository";
+import { getUserBeerCollection } from "@/repositories/beer.repository";
 
 const PAGE_SIZE = 20;
 
@@ -38,15 +35,9 @@ export default async function BeerCollectionPage({
   );
   const totalPages = Math.max(1, Math.ceil(totalItems / PAGE_SIZE));
 
-  const totalApprovedBeers = await getApprovedBeerCount();
-
   return (
     <div className="mx-auto max-w-5xl px-4 py-8">
       <h1 className="mb-6 text-2xl font-bold">My Beer Collection</h1>
-
-      <p>
-        Collection: {totalItems} / {totalApprovedBeers} beers
-      </p>
 
       {items.length === 0 ? (
         <p className="text-gray-500">
@@ -54,54 +45,100 @@ export default async function BeerCollectionPage({
         </p>
       ) : (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
-          {items.map((beer) => (
-            <Link
-              key={beer.beerId}
-              href={`/beers/${beer.beerId}`}
-              className="flex gap-3 rounded-lg border border-gray-200 p-3"
-            >
-              <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded bg-gray-100">
-                {beer.imageUrl ? (
+          {items.map((beer) =>
+            beer.status === "approved" ? (
+              <Link
+                key={beer.beerId}
+                href={`/beers/${beer.beerId}`}
+                className="flex gap-3 rounded-lg border border-gray-200 p-3 transition hover:bg-gray-50"
+              >
+                <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded bg-gray-100">
+                  {beer.imageUrl ? (
+                    <Image
+                      src={beer.imageUrl}
+                      alt={beer.beerName}
+                      fill
+                      sizes="64px"
+                      className="object-cover"
+                      loading="lazy"
+                    />
+                  ) : (
+                    <div className="flex h-full w-full items-center justify-center text-xs text-gray-400">
+                      No image
+                    </div>
+                  )}
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="truncate font-semibold">{beer.beerName}</p>
+                  <p className="truncate text-sm text-gray-600">
+                    {beer.breweryName}
+                  </p>
+                  <p className="text-xs text-gray-500">
+                    {beer.countryName}
+                    {beer.styleName ? ` · ${beer.styleName}` : ""}
+                  </p>
+                  <p className="text-xs text-gray-500">
+                    {beer.volumeMl ? `${beer.volumeMl} ml` : ""}
+                    {beer.abv ? ` · ${beer.abv}%` : ""}
+                  </p>
+                  {beer.collectedAt && (
+                    <p className="mt-1 text-xs text-gray-400">
+                      Collected {formatDate(beer.collectedAt)}
+                    </p>
+                  )}
+                </div>
+              </Link>
+            ) : (
+              <div
+                key={beer.beerId}
+                className="flex gap-3 rounded-lg border border-amber-200 bg-amber-50/50 p-3"
+              >
+                <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded bg-gray-100">
                   <Image
-                    src={beer.imageUrl}
-                    alt={beer.beerName}
+                    src="/placeholder_beer.webp"
+                    alt="Pending beer placeholder"
                     fill
                     sizes="64px"
                     className="object-cover"
                     loading="lazy"
                   />
-                ) : (
-                  <div className="flex h-full w-full items-center justify-center text-xs text-gray-400">
-                    No image
+                </div>
+                <div className="min-w-0 flex-1">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <p className="truncate font-semibold">{beer.beerName}</p>
+                    <span className="rounded-full bg-amber-100 px-2 py-0.5 text-[11px] font-medium text-amber-800">
+                      Pending approval
+                    </span>
                   </div>
-                )}
-              </div>
-              <div className="min-w-0 flex-1">
-                <p className="truncate font-semibold">{beer.beerName}</p>
-                <p className="truncate text-sm text-gray-600">
-                  {beer.breweryName}
-                </p>
-                <p className="text-xs text-gray-500">
-                  {beer.countryName}
-                  {beer.styleName ? ` · ${beer.styleName}` : ""}
-                </p>
-                <p className="text-xs text-gray-500">
-                  {beer.volumeMl ? `${beer.volumeMl} ml` : ""}
-                  {beer.abv ? ` · ${beer.abv}%` : ""}
-                </p>
-                {beer.collectedAt && (
-                  <p className="mt-1 text-xs text-gray-400">
-                    Collected {formatDate(beer.collectedAt)}
+                  <p className="truncate text-sm text-gray-600">
+                    {beer.breweryName}
                   </p>
-                )}
+                  <p className="text-xs text-gray-500">
+                    {beer.countryName}
+                    {beer.styleName ? ` · ${beer.styleName}` : ""}
+                  </p>
+                  <p className="text-xs text-gray-500">
+                    {beer.volumeMl ? `${beer.volumeMl} ml` : ""}
+                    {beer.abv ? ` · ${beer.abv}%` : ""}
+                  </p>
+                  {beer.collectedAt && (
+                    <p className="mt-1 text-xs text-gray-400">
+                      Collected {formatDate(beer.collectedAt)}
+                    </p>
+                  )}
+                </div>
               </div>
-            </Link>
-          ))}
+            ),
+          )}
         </div>
       )}
 
+      <p className="mt-6 text-center text-sm text-gray-600">
+        Total in collection: {totalItems}
+      </p>
+
       {totalPages > 1 && (
-        <div className="mt-8 flex items-center justify-center gap-2">
+        <div className="mt-4 flex items-center justify-center gap-2">
           <PaginationLink page={page - 1} disabled={page <= 1}>
             Previous
           </PaginationLink>

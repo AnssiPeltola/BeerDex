@@ -78,6 +78,7 @@ export type UserBeerCollectionPreviewDTO = {
   abv: string | null;
   imageUrl: string | null;
   collectedAt: Date | null;
+  status: "approved" | "pending";
 };
 
 export type UserBeerCollectionDTO = UserBeerCollectionPreviewDTO;
@@ -200,7 +201,7 @@ export async function getPendingBeers(): Promise<PendingBeerModerationDTO[]> {
 export async function getUserBeerCollectionPreview(
   userId: string,
 ): Promise<UserBeerCollectionPreviewDTO[]> {
-  return db
+  const rows = await db
     .select({
       beerId: beers.id,
       beerName: beers.name,
@@ -211,6 +212,7 @@ export async function getUserBeerCollectionPreview(
       abv: beers.abv,
       imageUrl: beerImages.imageUrl,
       collectedAt: userBeers.foundAt,
+      status: beers.status,
     })
     .from(userBeers)
     .innerJoin(beers, eq(userBeers.beerId, beers.id))
@@ -219,9 +221,19 @@ export async function getUserBeerCollectionPreview(
     .leftJoin(beerStyles, eq(beers.styleId, beerStyles.id))
     .leftJoin(approvedBeerImages, eq(approvedBeerImages.beerId, beers.id))
     .leftJoin(beerImages, eq(beerImages.id, approvedBeerImages.imageId))
-    .where(and(eq(userBeers.userId, userId), eq(beers.status, "approved")))
+    .where(
+      and(
+        eq(userBeers.userId, userId),
+        or(eq(beers.status, "approved"), eq(beers.status, "pending")),
+      ),
+    )
     .orderBy(desc(userBeers.foundAt))
     .limit(5);
+
+  return rows.map((row) => ({
+    ...row,
+    status: row.status as "approved" | "pending",
+  }));
 }
 
 export async function getUserBeerCollection(
@@ -245,6 +257,7 @@ export async function getUserBeerCollection(
       abv: beers.abv,
       imageUrl: beerImages.imageUrl,
       collectedAt: userBeers.foundAt,
+      status: beers.status,
     })
     .from(userBeers)
     .innerJoin(beers, eq(userBeers.beerId, beers.id))
@@ -253,10 +266,20 @@ export async function getUserBeerCollection(
     .leftJoin(beerStyles, eq(beers.styleId, beerStyles.id))
     .leftJoin(approvedBeerImages, eq(approvedBeerImages.beerId, beers.id))
     .leftJoin(beerImages, eq(beerImages.id, approvedBeerImages.imageId))
-    .where(and(eq(userBeers.userId, userId), eq(beers.status, "approved")))
+    .where(
+      and(
+        eq(userBeers.userId, userId),
+        or(eq(beers.status, "approved"), eq(beers.status, "pending")),
+      ),
+    )
     .orderBy(desc(userBeers.foundAt))
     .limit(pageSize)
     .offset(offset);
+
+  const normalizedItems = items.map((row) => ({
+    ...row,
+    status: row.status as "approved" | "pending",
+  }));
 
   const totalResult = await db
     .select({ count: count() })
@@ -267,10 +290,15 @@ export async function getUserBeerCollection(
     .leftJoin(beerStyles, eq(beers.styleId, beerStyles.id))
     .leftJoin(approvedBeerImages, eq(approvedBeerImages.beerId, beers.id))
     .leftJoin(beerImages, eq(beerImages.id, approvedBeerImages.imageId))
-    .where(and(eq(userBeers.userId, userId), eq(beers.status, "approved")));
+    .where(
+      and(
+        eq(userBeers.userId, userId),
+        or(eq(beers.status, "approved"), eq(beers.status, "pending")),
+      ),
+    );
 
   return {
-    items,
+    items: normalizedItems,
     totalItems: totalResult[0]?.count ?? 0,
   };
 }
