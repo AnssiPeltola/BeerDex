@@ -604,3 +604,14 @@ export async function getUserBeerRating(
   // number = existing rating
   return result[0]?.rating;
 }
+
+export async function getBeerCollectionCount(beerId: number) {
+  const [result] = await db
+    .select({
+      collectionCount: count(),
+    })
+    .from(userBeers)
+    .where(eq(userBeers.beerId, beerId));
+
+  return result.collectionCount;
+}
